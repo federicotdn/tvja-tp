@@ -1,7 +1,5 @@
 package com.tvja.main;
 
-import java.util.Arrays;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -16,15 +14,16 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
-import com.tvja.camera.Camera;
 import com.tvja.camera.FPSCamera;
-import com.tvja.camera.PerspectiveCamera;
+import com.tvja.camera.FPSControllableCamera;
+import com.tvja.camera.OrthoFPSCamera;
 
 public class TPGame extends ApplicationAdapter {
 	Texture img;
 	Mesh shipMesh;
 	ShaderProgram shaderProgram;
-	FPSCamera cam = new FPSCamera(0.1f, 0.01f);
+	//FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
+	FPSControllableCamera cam = new OrthoFPSCamera(0.1f, 0.01f);
 	
 	float angle = 0;
 
@@ -46,8 +45,6 @@ public class TPGame extends ApplicationAdapter {
 		
 		shipMesh.setVertices(shipModel.meshes.get(0).vertices);
 		shipMesh.setIndices(shipModel.meshes.get(0).parts[0].indices);
-		
-		cam.setPosition(new Vector3(1, 0, 0));
 	}
 
 	private void setupGdx() {
@@ -67,6 +64,20 @@ public class TPGame extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		
 		cam.update();
+		
+		if (Gdx.input.isKeyPressed(Keys.X)) {
+			Vector3 pos = cam.getPosition();
+			Vector3 ori = cam.getOrientation();
+			cam = new FPSCamera(0.1f, 0.01f);
+			cam.setOrientation(ori);
+			cam.setPosition(pos);
+		} else if (Gdx.input.isKeyPressed(Keys.C)) {
+			Vector3 pos = cam.getPosition();
+			Vector3 ori = cam.getOrientation();
+			cam = new OrthoFPSCamera(0.1f, 0.01f);
+			cam.setOrientation(ori);
+			cam.setPosition(pos);
+		}
 		
 		Gdx.gl.glActiveTexture(0);
 		img.bind();

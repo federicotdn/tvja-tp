@@ -3,7 +3,7 @@ package com.tvja.camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
-public abstract class Camera {
+public abstract class Camera implements OpenGLCamera {
 
 	protected Matrix4 projection;
 	protected Vector3 position;
@@ -14,18 +14,22 @@ public abstract class Camera {
 		orientation = new Vector3();
 	}
 
+	@Override
 	public void setPosition(Vector3 pos) {
 		position = pos;
 	}
 
+	@Override
 	public Vector3 getPosition() {
 		return position;
 	}
 
+	@Override
 	public void setOrientation(Vector3 dir) {
 		orientation = dir;
 	}
 
+	@Override
 	public Vector3 getOrientation() {
 		return orientation;
 	}
@@ -59,6 +63,7 @@ public abstract class Camera {
 						position.x, position.y, position.z, 1 });
 	}
 	
+	@Override
 	public Matrix4 getViewProjection() {
 		Matrix4 t = getTransMatrix();
 		
