@@ -36,6 +36,10 @@ public class TPGame extends ApplicationAdapter {
 		String fs = Gdx.files.internal("defaultFS.glsl").readString();
 
 		shaderProgram = new ShaderProgram(vs, fs);
+		
+		if (!shaderProgram.isCompiled()) {
+			System.out.println(shaderProgram.getLog());
+		}
 
 		ModelLoader<?> loader = new ObjLoader();
 		ModelData shipModel = loader.loadModelData(Gdx.files.internal("ship.obj"));
