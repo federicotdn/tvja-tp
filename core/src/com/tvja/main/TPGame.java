@@ -31,9 +31,9 @@ public class TPGame extends ApplicationAdapter {
 	public void create() {
 		setupGdx();
 		
-		img = new Texture(Gdx.files.internal("ship.png"));
-		String vs = Gdx.files.internal("defaultVS.glsl").readString();
-		String fs = Gdx.files.internal("defaultFS.glsl").readString();
+		img = new Texture(Gdx.files.internal("models/ship.png"));
+		String vs = Gdx.files.internal("shaders/defaultVS.glsl").readString();
+		String fs = Gdx.files.internal("shaders/phong-directionalFS.glsl").readString();
 
 		shaderProgram = new ShaderProgram(vs, fs);
 		
@@ -42,7 +42,7 @@ public class TPGame extends ApplicationAdapter {
 		}
 
 		ModelLoader<?> loader = new ObjLoader();
-		ModelData shipModel = loader.loadModelData(Gdx.files.internal("ship.obj"));
+		ModelData shipModel = loader.loadModelData(Gdx.files.internal("models/ship.obj"));
 
 		shipMesh = new Mesh(true, shipModel.meshes.get(0).vertices.length,
 				shipModel.meshes.get(0).parts[0].indices.length, VertexAttribute.Position(), VertexAttribute.Normal(), VertexAttribute.TexCoords(0));
@@ -52,7 +52,7 @@ public class TPGame extends ApplicationAdapter {
 	}
 
 	private void setupGdx() {
-		Gdx.graphics.setDisplayMode(1920, 1080, true);
+		Gdx.graphics.setDisplayMode(1000, 1000, false);
 		Gdx.input.setCursorCatched(true);
 		
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
@@ -85,8 +85,17 @@ public class TPGame extends ApplicationAdapter {
 		
 		Gdx.gl.glActiveTexture(0);
 		img.bind();
+		
+		Vector3 cam_pos = cam.getPosition();
+		float[] cam_pos_4 = new float[] { cam_pos.x, cam_pos.y, cam_pos.z, 1 };
+		
 		shaderProgram.begin();
 		shaderProgram.setUniformi("u_texture", 0);
+		
+		shaderProgram.setUniform4fv("u_light_direction", new float[] {1, 0, 1, 1}, 0, 4);
+		shaderProgram.setUniform4fv("u_light_color", new float[] {1, 1, 1, 1}, 0, 4);
+		shaderProgram.setUniform4fv("u_ambient_color", new float[] {0.1f, 0.1f, 0, 1}, 0, 4);
+		shaderProgram.setUniform4fv("u_cam_pos", cam_pos_4, 0, 4);
 		
 		float sum = 0;
 		
@@ -102,6 +111,8 @@ public class TPGame extends ApplicationAdapter {
 				modelMat.rotateRad(new Vector3(0, 0, 1), diff);
 				
 				shaderProgram.setUniformMatrix("u_mvp", cam.getViewProjection().mul(modelMat));
+				shaderProgram.setUniformMatrix("u_model_mat", modelMat); //para specular
+				
 				shipMesh.render(shaderProgram, GL20.GL_TRIANGLES);	
 			}
 		}
@@ -110,7 +121,7 @@ public class TPGame extends ApplicationAdapter {
 	}
 	
 	private void updateAngle() {
-		angle += 0.1f;
+		angle += 0.06f;
 		while (angle < 0)
 			angle += Math.PI * 2;
 		while (angle > Math.PI * 2)
