@@ -93,8 +93,8 @@ public class TPGame extends ApplicationAdapter {
 		shaderProgram.setUniformi("u_texture", 0);
 		
 		shaderProgram.setUniform4fv("u_light_direction", new float[] {1, 0, 1, 1}, 0, 4);
-		shaderProgram.setUniform4fv("u_light_color", new float[] {1, 1, 1, 1}, 0, 4);
-		shaderProgram.setUniform4fv("u_ambient_color", new float[] {0.1f, 0.1f, 0, 1}, 0, 4);
+		shaderProgram.setUniform4fv("u_light_color", new float[]{1, 1, 1, 1}, 0, 4);
+		shaderProgram.setUniform4fv("u_ambient_color", new float[]{0.1f, 0.1f, 0, 1}, 0, 4);
 		shaderProgram.setUniform4fv("u_cam_pos", cam_pos_4, 0, 4);
 		
 		drawMoving();
@@ -125,17 +125,21 @@ public class TPGame extends ApplicationAdapter {
 			sum += 0.6f;
 			for (int j = 0; j < 10; j++) {
 				sum += 0.8f;
-				
+
 				Matrix4 modelMat = new Matrix4();
 				float diff = (float) Math.sin(angle + sum);
-				modelMat.translate((i*2) + (diff * 0.5f), diff, (j*2) + (diff * 0.5f));
-				
-				modelMat.rotateRad(new Vector3(0, 0, 1), diff);
-				
+				modelMat.translate((i * 2) + (diff * 0.5f), diff, (j * 2) + (diff * 0.5f));
+
+				Matrix4 modelMatRot = new Matrix4();
+				modelMatRot.rotateRad(new Vector3(0, 0, 1), diff);
+
+				modelMat.mul(modelMatRot);
+
 				shaderProgram.setUniformMatrix("u_mvp", cam.getViewProjection().mul(modelMat));
 				shaderProgram.setUniformMatrix("u_model_mat", modelMat); //para (es)specular
-				
-				shipMesh.render(shaderProgram, GL20.GL_TRIANGLES);	
+				shaderProgram.setUniformMatrix("u_model_rotation_mat", modelMatRot);
+
+				shipMesh.render(shaderProgram, GL20.GL_TRIANGLES);
 			}
 		}
 	}

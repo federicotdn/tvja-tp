@@ -8,6 +8,7 @@ uniform sampler2D u_texture;
 uniform vec4 u_cam_pos;
 
 uniform mat4 u_model_mat;
+uniform mat4 u_model_rotation_mat;
 
 varying vec4 v_position;
 varying vec4 v_normal;
@@ -16,7 +17,7 @@ varying vec2 v_texCoords;
 void main()
 {
 	vec4 tex_color = texture2D(u_texture, v_texCoords);
-	vec4 normal_w = normalize(u_model_mat * v_normal);
+	vec4 normal_w = normalize(u_model_rotation_mat * v_normal);
 	
 	/* DIFFUSE */
 	vec4 after_light = max(0, (dot(normal_w, u_light_direction))) * tex_color;
@@ -33,5 +34,5 @@ void main()
 	vec4 after_light_spec = max(0, pow(dot(r_vec, v_vec), 3)) * tex_color;
 	vec4 specular_component = after_light_spec * u_light_color;
 	
-	gl_FragColor = ambient_component + diffuse_component + specular_component*0.0001;
+	gl_FragColor = ambient_component + diffuse_component + specular_component;
 }
