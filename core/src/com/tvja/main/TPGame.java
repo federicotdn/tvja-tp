@@ -22,8 +22,8 @@ public class TPGame extends ApplicationAdapter {
 	Texture img;
 	Mesh shipMesh;
 	ShaderProgram shaderProgram;
-	//FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
-	FPSControllableCamera cam = new OrthoFPSCamera(0.1f, 0.01f);
+	FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
+	//FPSControllableCamera cam = new OrthoFPSCamera(0.1f, 0.01f);
 	
 	float angle = 0;
 
@@ -97,6 +97,28 @@ public class TPGame extends ApplicationAdapter {
 		shaderProgram.setUniform4fv("u_ambient_color", new float[] {0.1f, 0.1f, 0, 1}, 0, 4);
 		shaderProgram.setUniform4fv("u_cam_pos", cam_pos_4, 0, 4);
 		
+		drawMoving();
+		//drawCube();
+		
+		shaderProgram.end();
+	}
+	
+	private void drawCube() {
+		Matrix4 t = new Matrix4();
+		Matrix4 r = new Matrix4();
+		Matrix4 s = new Matrix4();
+		
+		t.translate(-1, 0, -1);
+		r.rotateRad(new Vector3(0, 1, 0), angle);
+		
+		Matrix4 m = s.mul(r).mul(t);
+		
+		shaderProgram.setUniformMatrix("u_mvp", cam.getViewProjection().mul(m));
+		shaderProgram.setUniformMatrix("u_model_mat", m); //para (es)specular
+		shipMesh.render(shaderProgram, GL20.GL_TRIANGLES);	
+	}
+	
+	private void drawMoving() {
 		float sum = 0;
 		
 		for (int i = 0; i < 10; i++) {
@@ -111,13 +133,11 @@ public class TPGame extends ApplicationAdapter {
 				modelMat.rotateRad(new Vector3(0, 0, 1), diff);
 				
 				shaderProgram.setUniformMatrix("u_mvp", cam.getViewProjection().mul(modelMat));
-				shaderProgram.setUniformMatrix("u_model_mat", modelMat); //para specular
+				shaderProgram.setUniformMatrix("u_model_mat", modelMat); //para (es)specular
 				
 				shipMesh.render(shaderProgram, GL20.GL_TRIANGLES);	
 			}
 		}
-		
-		shaderProgram.end();
 	}
 	
 	private void updateAngle() {
