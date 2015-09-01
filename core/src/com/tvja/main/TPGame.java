@@ -19,8 +19,9 @@ import com.tvja.camera.FPSControllableCamera;
 import com.tvja.camera.OrthoFPSCamera;
 
 public class TPGame extends ApplicationAdapter {
-	Texture img;
+	Texture img, img2;
 	Mesh shipMesh;
+	Mesh cubeMesh;
 	ShaderProgram shaderProgram;
 	FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
 	//FPSControllableCamera cam = new OrthoFPSCamera(0.1f, 0.01f);
@@ -32,8 +33,11 @@ public class TPGame extends ApplicationAdapter {
 		setupGdx();
 		
 		img = new Texture(Gdx.files.internal("models/ship.png"));
+		img2 = new Texture(Gdx.files.internal("models/plain.jpg"));
+		
+		
 		String vs = Gdx.files.internal("shaders/defaultVS.glsl").readString();
-		String fs = Gdx.files.internal("shaders/phong-directionalFS.glsl").readString();
+		String fs = Gdx.files.internal("shaders/phong-spotFS.glsl").readString();
 
 		shaderProgram = new ShaderProgram(vs, fs);
 		
@@ -43,12 +47,20 @@ public class TPGame extends ApplicationAdapter {
 
 		ModelLoader<?> loader = new ObjLoader();
 		ModelData shipModel = loader.loadModelData(Gdx.files.internal("models/ship.obj"));
+		
+		ModelData cubeModel = loader.loadModelData(Gdx.files.internal("models/cube-textures.obj"));
 
 		shipMesh = new Mesh(true, shipModel.meshes.get(0).vertices.length,
 				shipModel.meshes.get(0).parts[0].indices.length, VertexAttribute.Position(), VertexAttribute.Normal(), VertexAttribute.TexCoords(0));
 		
 		shipMesh.setVertices(shipModel.meshes.get(0).vertices);
 		shipMesh.setIndices(shipModel.meshes.get(0).parts[0].indices);
+		
+		cubeMesh = new Mesh(true, cubeModel.meshes.get(0).vertices.length,
+				cubeModel.meshes.get(0).parts[0].indices.length, VertexAttribute.Position(), VertexAttribute.Normal(), VertexAttribute.TexCoords(0));
+		
+		cubeMesh.setVertices(cubeModel.meshes.get(0).vertices);
+		cubeMesh.setIndices(cubeModel.meshes.get(0).parts[0].indices);
 	}
 
 	private void setupGdx() {
@@ -89,10 +101,19 @@ public class TPGame extends ApplicationAdapter {
 		Vector3 cam_pos = cam.getPosition();
 		float[] cam_pos_4 = new float[] { cam_pos.x, cam_pos.y, cam_pos.z, 1 };
 		
+		Vector3 cam_ori_angles = new Vector3(cam.getOrientation());
+		Vector3 cam_ori = new Vector3();
+		cam_ori.rotateRad(new Vector3(1, 0, 0), cam_ori_angles.x);
+		cam_ori.rotateRad(new Vector3(0, 1, 0), cam_ori_angles.y);
+		cam_ori.rotateRad(new Vector3(0, 0, 1), cam_ori_angles.z);
+		cam_ori.nor();
+		float[] cam_ori_4 = new float[] { cam_ori.x, cam_ori.y, cam_ori.z, 1 };
+		
 		shaderProgram.begin();
 		shaderProgram.setUniformi("u_texture", 0);
-		
-		shaderProgram.setUniform4fv("u_light_direction", new float[] {1, 0, 1, 1}, 0, 4);
+		shaderProgram.setUniformf("u_cutoff_angle", (float) (Math.PI / 10.0f));
+		shaderProgram.setUniform4fv("u_light_direction", new float[]{1, 1, 1, 1}, 0, 4); //directional
+		shaderProgram.setUniform4fv("u_light_position", new float[]{50, 1, 50, 1}, 0, 4); //point
 		shaderProgram.setUniform4fv("u_light_color", new float[]{1, 1, 1, 1}, 0, 4);
 		shaderProgram.setUniform4fv("u_ambient_color", new float[]{0.1f, 0.1f, 0, 1}, 0, 4);
 		shaderProgram.setUniform4fv("u_cam_pos", cam_pos_4, 0, 4);
@@ -128,10 +149,10 @@ public class TPGame extends ApplicationAdapter {
 
 				Matrix4 modelMat = new Matrix4();
 				float diff = (float) Math.sin(angle + sum);
-				modelMat.translate((i * 2) + (diff * 0.5f), diff, (j * 2) + (diff * 0.5f));
+				modelMat.translate((i * 2) + (0 * 0.5f), 0, (j * 2) + (0 * 0.5f));
 
 				Matrix4 modelMatRot = new Matrix4();
-				modelMatRot.rotateRad(new Vector3(0, 0, 1), diff);
+				//modelMatRot.rotateRad(new Vector3(0, 0, 1), diff);
 
 				modelMat.mul(modelMatRot);
 
@@ -142,10 +163,27 @@ public class TPGame extends ApplicationAdapter {
 				shipMesh.render(shaderProgram, GL20.GL_TRIANGLES);
 			}
 		}
+		
+		img2.bind(1);
+		shaderProgram.setUniformi("u_texture", 1);
+		
+		Matrix4 t = new Matrix4();
+		Matrix4 r = new Matrix4();
+		Matrix4 s = new Matrix4();
+		s.scale(2000, 0.2f, 2000);
+		t.translate(new Vector3(-50, -1, -50));
+		
+		Matrix4 trs = new Matrix4(t).mul(r).mul(s);
+		
+		shaderProgram.setUniformMatrix("u_mvp", cam.getViewProjection().mul(trs));
+		shaderProgram.setUniformMatrix("u_model_mat", trs); //para (es)specular
+		shaderProgram.setUniformMatrix("u_model_rotation_mat", r);
+		
+		cubeMesh.render(shaderProgram, GL20.GL_TRIANGLES);
 	}
 	
 	private void updateAngle() {
-		angle += 0.06f;
+		angle += 0.05f;
 		while (angle < 0)
 			angle += Math.PI * 2;
 		while (angle > Math.PI * 2)
