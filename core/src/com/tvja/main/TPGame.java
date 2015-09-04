@@ -11,188 +11,125 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.model.data.ModelData;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-
 import com.tvja.camera.FPSCamera;
 import com.tvja.camera.FPSControllableCamera;
 import com.tvja.camera.OrthoFPSCamera;
+import com.tvja.render.Light;
+import com.tvja.render.ModelInstance;
+import com.tvja.render.Shader;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TPGame extends ApplicationAdapter {
-	Texture img, img2;
-	Mesh shipMesh;
-	Mesh cubeMesh;
-	ShaderProgram shaderProgram;
-	FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
-	//FPSControllableCamera cam = new OrthoFPSCamera(0.1f, 0.01f);
-	
-	float angle = 0;
+    Texture img, img2;
+    Mesh shipMesh;
+    Mesh cubeMesh;
+    ShaderProgram shaderProgram;
+    FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
 
-	@Override
-	public void create() {
-		setupGdx();
-		
-		img = new Texture(Gdx.files.internal("models/ship.png"));
-		img2 = new Texture(Gdx.files.internal("models/plain.jpg"));
-		
-		
-		String vs = Gdx.files.internal("shaders/defaultVS.glsl").readString();
-		String fs = Gdx.files.internal("shaders/phong-spotFS.glsl").readString();
+    Shader directionalShader;
+    Shader pointShader;
+    Shader spotShader;
 
-		shaderProgram = new ShaderProgram(vs, fs);
-		
-		if (!shaderProgram.isCompiled()) {
-			System.out.println(shaderProgram.getLog());
-		}
+    List<ModelInstance> models = new ArrayList<>();
 
-		ModelLoader<?> loader = new ObjLoader();
-		ModelData shipModel = loader.loadModelData(Gdx.files.internal("models/ship.obj"));
-		
-		ModelData cubeModel = loader.loadModelData(Gdx.files.internal("models/cube-textures.obj"));
+    List<Light> directionalLights = new ArrayList<>();
+    List<Light> spotLights = new ArrayList<>();
+    List<Light> pointLights = new ArrayList<>();
 
-		shipMesh = new Mesh(true, shipModel.meshes.get(0).vertices.length,
-				shipModel.meshes.get(0).parts[0].indices.length, VertexAttribute.Position(), VertexAttribute.Normal(), VertexAttribute.TexCoords(0));
-		
-		shipMesh.setVertices(shipModel.meshes.get(0).vertices);
-		shipMesh.setIndices(shipModel.meshes.get(0).parts[0].indices);
-		
-		cubeMesh = new Mesh(true, cubeModel.meshes.get(0).vertices.length,
-				cubeModel.meshes.get(0).parts[0].indices.length, VertexAttribute.Position(), VertexAttribute.Normal(), VertexAttribute.TexCoords(0));
-		
-		cubeMesh.setVertices(cubeModel.meshes.get(0).vertices);
-		cubeMesh.setIndices(cubeModel.meshes.get(0).parts[0].indices);
-	}
+    @Override
+    public void create() {
+        setupGdx();
 
-	private void setupGdx() {
-		Gdx.graphics.setDisplayMode(1000, 1000, false);
-		Gdx.input.setCursorCatched(true);
-		
-		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-		Gdx.gl.glDepthFunc(GL20.GL_LESS);
-	}
-	
-	@Override
-	public void render() {
-		checkExit();
-		updateAngle();
-		
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		
-		cam.update();
-		
-		if (Gdx.input.isKeyPressed(Keys.X)) {
-			Vector3 pos = cam.getPosition();
-			Vector3 ori = cam.getOrientation();
-			cam = new FPSCamera(0.1f, 0.01f);
-			cam.setOrientation(ori);
-			cam.setPosition(pos);
-		} else if (Gdx.input.isKeyPressed(Keys.C)) {
-			Vector3 pos = cam.getPosition();
-			Vector3 ori = cam.getOrientation();
-			cam = new OrthoFPSCamera(0.1f, 0.01f);
-			cam.setOrientation(ori);
-			cam.setPosition(pos);
-		}
-		
-		Gdx.gl.glActiveTexture(0);
-		img.bind();
-		
-		Vector3 cam_pos = cam.getPosition();
-		float[] cam_pos_4 = new float[] { cam_pos.x, cam_pos.y, cam_pos.z, 1 };
-		
-		Vector3 cam_ori_angles = new Vector3(cam.getOrientation());
-		Vector3 cam_ori = new Vector3();
-		cam_ori.rotateRad(new Vector3(1, 0, 0), cam_ori_angles.x);
-		cam_ori.rotateRad(new Vector3(0, 1, 0), cam_ori_angles.y);
-		cam_ori.rotateRad(new Vector3(0, 0, 1), cam_ori_angles.z);
-		cam_ori.nor();
-		float[] cam_ori_4 = new float[] { cam_ori.x, cam_ori.y, cam_ori.z, 1 };
-		
-		shaderProgram.begin();
-		shaderProgram.setUniformi("u_texture", 0);
-		shaderProgram.setUniformf("u_cutoff_angle", (float) (Math.PI / 10.0f));
-		shaderProgram.setUniform4fv("u_light_direction", new float[]{1, 1, 1, 1}, 0, 4); //directional
-		shaderProgram.setUniform4fv("u_light_position", new float[]{50, 1, 50, 1}, 0, 4); //point
-		shaderProgram.setUniform4fv("u_light_color", new float[]{1, 1, 1, 1}, 0, 4);
-		shaderProgram.setUniform4fv("u_ambient_color", new float[]{0.1f, 0.1f, 0, 1}, 0, 4);
-		shaderProgram.setUniform4fv("u_cam_pos", cam_pos_4, 0, 4);
-		
-		drawMoving();
-		//drawCube();
-		
-		shaderProgram.end();
-	}
-	
-	private void drawCube() {
-		Matrix4 t = new Matrix4();
-		Matrix4 r = new Matrix4();
-		Matrix4 s = new Matrix4();
-		
-		t.translate(-1, 0, -1);
-		r.rotateRad(new Vector3(0, 1, 0), angle);
-		
-		Matrix4 m = s.mul(r).mul(t);
-		
-		shaderProgram.setUniformMatrix("u_mvp", cam.getViewProjection().mul(m));
-		shaderProgram.setUniformMatrix("u_model_mat", m); //para (es)specular
-		shipMesh.render(shaderProgram, GL20.GL_TRIANGLES);	
-	}
-	
-	private void drawMoving() {
-		float sum = 0;
-		
-		for (int i = 0; i < 10; i++) {
-			sum += 0.6f;
-			for (int j = 0; j < 10; j++) {
-				sum += 0.8f;
+        img = new Texture(Gdx.files.internal("models/ship.png"));
+        img2 = new Texture(Gdx.files.internal("models/plain.jpg"));
 
-				Matrix4 modelMat = new Matrix4();
-				float diff = (float) Math.sin(angle + sum);
-				modelMat.translate((i * 2) + (0 * 0.5f), 0, (j * 2) + (0 * 0.5f));
+        String vs = Gdx.files.internal("shaders/defaultVS.glsl").readString();
+        String fs = Gdx.files.internal("shaders/phong-spotFS.glsl").readString();
 
-				Matrix4 modelMatRot = new Matrix4();
-				//modelMatRot.rotateRad(new Vector3(0, 0, 1), diff);
+        shaderProgram = new ShaderProgram(vs, fs);
 
-				modelMat.mul(modelMatRot);
+        if (!shaderProgram.isCompiled()) {
+            System.out.println(shaderProgram.getLog());
+        }
 
-				shaderProgram.setUniformMatrix("u_mvp", cam.getViewProjection().mul(modelMat));
-				shaderProgram.setUniformMatrix("u_model_mat", modelMat); //para (es)specular
-				shaderProgram.setUniformMatrix("u_model_rotation_mat", modelMatRot);
+        ModelLoader<?> loader = new ObjLoader();
+        ModelData shipModel = loader.loadModelData(Gdx.files.internal("models/ship.obj"));
 
-				shipMesh.render(shaderProgram, GL20.GL_TRIANGLES);
-			}
-		}
-		
-		img2.bind(1);
-		shaderProgram.setUniformi("u_texture", 1);
-		
-		Matrix4 t = new Matrix4();
-		Matrix4 r = new Matrix4();
-		Matrix4 s = new Matrix4();
-		s.scale(2000, 0.2f, 2000);
-		t.translate(new Vector3(-50, -1, -50));
-		
-		Matrix4 trs = new Matrix4(t).mul(r).mul(s);
-		
-		shaderProgram.setUniformMatrix("u_mvp", cam.getViewProjection().mul(trs));
-		shaderProgram.setUniformMatrix("u_model_mat", trs); //para (es)specular
-		shaderProgram.setUniformMatrix("u_model_rotation_mat", r);
-		
-		cubeMesh.render(shaderProgram, GL20.GL_TRIANGLES);
-	}
-	
-	private void updateAngle() {
-		angle += 0.05f;
-		while (angle < 0)
-			angle += Math.PI * 2;
-		while (angle > Math.PI * 2)
-			angle -= Math.PI * 2;
-	}
-	
-	private void checkExit() {
-		if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
-			Gdx.app.exit();
-		}
-	}
+        ModelData cubeModel = loader.loadModelData(Gdx.files.internal("models/cube-textures.obj"));
+
+        shipMesh = new Mesh(true, shipModel.meshes.get(0).vertices.length,
+                shipModel.meshes.get(0).parts[0].indices.length, VertexAttribute.Position(), VertexAttribute.Normal(), VertexAttribute.TexCoords(0));
+
+        shipMesh.setVertices(shipModel.meshes.get(0).vertices);
+        shipMesh.setIndices(shipModel.meshes.get(0).parts[0].indices);
+
+        cubeMesh = new Mesh(true, cubeModel.meshes.get(0).vertices.length,
+                cubeModel.meshes.get(0).parts[0].indices.length, VertexAttribute.Position(), VertexAttribute.Normal(), VertexAttribute.TexCoords(0));
+
+        cubeMesh.setVertices(cubeModel.meshes.get(0).vertices);
+        cubeMesh.setIndices(cubeModel.meshes.get(0).parts[0].indices);
+
+        directionalShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-directionalFS.glsl");
+        pointShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-pointFS.glsl");
+        spotShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-spotFS.glsl");
+
+        models.add(new ModelInstance(shipMesh, img));
+        models.add(new ModelInstance(shipMesh, img).translate(2, 0, 0));
+        models.add(new ModelInstance(shipMesh, img).translate(4, 0, 0));
+        models.add(new ModelInstance(shipMesh, img).translate(6, 0, 0));
+        models.add(new ModelInstance(cubeMesh, img2).translate(-1000, -1, -1000).scale(2000, 0.5f, 2000));
+
+        directionalLights.add(new Light(null, new Vector3(1, 1, 1), new Vector3(1, 1, 1), new Vector3(0.1f, 0.1f, 0.1f), null));
+        pointLights.add(new Light(new Vector3(1, 1, 1), null, new Vector3(1, 1, 1), new Vector3(0.1f, 0.1f, 0.1f), null));
+        spotLights.add(new Light(new Vector3(0, 1, 0), new Vector3(1, 1, 1), new Vector3(1, 1, 1), new Vector3(0.1f, 0.1f, 0.1f), (float) Math.PI/3));
+    }
+
+    private void setupGdx() {
+        Gdx.graphics.setDisplayMode(1000, 1000, false);
+        Gdx.input.setCursorCatched(true);
+
+        Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
+        Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
+    }
+
+    @Override
+    public void render() {
+        checkExit();
+
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
+        cam.update();
+
+        updateCameraType();
+
+//        pointShader.render(cam, models, pointLights);
+//        directionalShader.render(cam, models, directionalLights);
+        spotShader.render(cam, models, spotLights);
+    }
+
+    private void updateCameraType() {
+        if (Gdx.input.isKeyPressed(Keys.X)) {
+            Vector3 pos = cam.getPosition();
+            Vector3 ori = cam.getOrientation();
+            cam = new FPSCamera(0.1f, 0.01f);
+            cam.setOrientation(ori);
+            cam.setPosition(pos);
+        } else if (Gdx.input.isKeyPressed(Keys.C)) {
+            Vector3 pos = cam.getPosition();
+            Vector3 ori = cam.getOrientation();
+            cam = new OrthoFPSCamera(0.1f, 0.01f);
+            cam.setOrientation(ori);
+            cam.setPosition(pos);
+        }
+    }
+
+    private void checkExit() {
+        if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+            Gdx.app.exit();
+        }
+    }
 }
