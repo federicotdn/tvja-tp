@@ -29,6 +29,8 @@ public class TPGame extends ApplicationAdapter {
     ShaderProgram shaderProgram;
     FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
 
+    float angle = 0;
+    
     Shader directionalShader;
     Shader pointShader;
     Shader spotShader;
@@ -82,21 +84,28 @@ public class TPGame extends ApplicationAdapter {
         models.add(new ModelInstance(shipMesh, img).translate(6, 0, 0));
         models.add(new ModelInstance(cubeMesh, img2).translate(-1000, -1, -1000).scale(2000, 0.5f, 2000));
 
-        directionalLights.add(new Light(null, new Vector3(1, 1, 1), new Vector3(1, 1, 1), new Vector3(0.1f, 0.1f, 0.1f), null));
-        pointLights.add(new Light(new Vector3(1, 1, 1), null, new Vector3(1, 1, 1), new Vector3(0.1f, 0.1f, 0.1f), null));
-        spotLights.add(new Light(new Vector3(0, 1, 0), new Vector3(1, 1, 1), new Vector3(1, 1, 1), new Vector3(0.1f, 0.1f, 0.1f), (float) Math.PI/3));
+        directionalLights.add(Light.newDirectional(new Vector3(1, 1, 1), new Vector3(1,1,1)));
+        pointLights.add(Light.newPoint(new Vector3(1, 4, 1), new Vector3(0, 1, 1)));
+        spotLights.add(Light.newSpot(new Vector3(1,1,1), new Vector3(1,1,1), new Vector3(1,1,1), (float)Math.PI/3));
     }
 
     private void setupGdx() {
         Gdx.graphics.setDisplayMode(1000, 1000, false);
         Gdx.input.setCursorCatched(true);
+        
+        Gdx.gl20.glDepthMask(true);
 
         Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
-        Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
+        Gdx.gl20.glDepthFunc(GL20.GL_LESS);
+        
+        Gdx.gl20.glEnable(GL20.GL_BLEND);
+        Gdx.gl20.glBlendFunc(Gdx.gl20.GL_ONE, Gdx.gl20.GL_ONE);
     }
 
     @Override
     public void render() {
+    	//angle += 0.01f;
+    	
         checkExit();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -105,10 +114,12 @@ public class TPGame extends ApplicationAdapter {
         cam.update();
 
         updateCameraType();
+        
+        spotLights.get(0).getDirection().get().rotateRad(new Vector3(1, 0, 1), 0.02f);
 
-//        pointShader.render(cam, models, pointLights);
-//        directionalShader.render(cam, models, directionalLights);
         spotShader.render(cam, models, spotLights);
+        pointShader.render(cam, models, pointLights);
+        directionalShader.render(cam, models, directionalLights);
     }
 
     private void updateCameraType() {

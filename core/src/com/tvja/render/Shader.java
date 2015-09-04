@@ -33,10 +33,9 @@ public class Shader {
             Gdx.gl.glActiveTexture(0);
             model.getTex().bind(0);
 
-
             shaderProgram.setUniformi("u_texture", 0);
             shaderProgram.setUniformMatrix("u_mvp", cam.getViewProjection().mul(model.getTRS()));
-            shaderProgram.setUniformMatrix("u_model_mat", model.getTRS()); //para (es)specular
+            shaderProgram.setUniformMatrix("u_model_mat", model.getTRS());
             shaderProgram.setUniformMatrix("u_model_rotation_mat", model.getR());
 
             for (Light light : lights) {
@@ -52,7 +51,6 @@ public class Shader {
                     shaderProgram.setUniform4fv("u_cam_pos", VecUtils.toVec4f(cam.getPosition()), 0, 4);
                 }
 
-                Gdx.gl20.glBlendFunc(Gdx.gl20.GL_ONE, Gdx.gl20.GL_ONE);
                 model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
             }
         }

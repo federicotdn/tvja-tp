@@ -33,6 +33,8 @@ void main()
 
 	vec4 after_light_spec = max(0, pow(dot(r_vec, v_vec), 3)) * tex_color;
 	vec4 specular_component = after_light_spec * u_light_color;
+	
+	vec4 final_color = vec4(ambient_component.xyz + diffuse_component.xyz + specular_component.xyz, 1);
 
-	gl_FragColor = ambient_component + diffuse_component + specular_component;
+	gl_FragColor = final_color;
 }
