@@ -34,6 +34,7 @@ public class TPGame extends ApplicationAdapter {
     Shader directionalShader;
     Shader pointShader;
     Shader spotShader;
+    Shader earlyZShader;
 
     List<ModelInstance> models = new ArrayList<>();
 
@@ -77,6 +78,7 @@ public class TPGame extends ApplicationAdapter {
         directionalShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-directionalFS.glsl");
         pointShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-pointFS.glsl");
         spotShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-spotFS.glsl");
+        earlyZShader = new Shader("shaders/defaultVS.glsl", "shaders/early-zFS.glsl");
 
         models.add(new ModelInstance(shipMesh, img));
         models.add(new ModelInstance(shipMesh, img).translate(2, 0, 0));
@@ -85,7 +87,7 @@ public class TPGame extends ApplicationAdapter {
         models.add(new ModelInstance(cubeMesh, img2).translate(-1000, -1, -1000).scale(2000, 0.5f, 2000));
 
         directionalLights.add(Light.newDirectional(new Vector3(1, 1, 1), new Vector3(1,1,1)));
-        pointLights.add(Light.newPoint(new Vector3(1, 4, 1), new Vector3(0, 1, 1)));
+        pointLights.add(Light.newPoint(new Vector3(1, 4, 1), new Vector3(1, 1, 1)));
         spotLights.add(Light.newSpot(new Vector3(1,1,1), new Vector3(1,1,1), new Vector3(1,1,1), (float)Math.PI/3));
     }
 
@@ -93,14 +95,13 @@ public class TPGame extends ApplicationAdapter {
         Gdx.graphics.setDisplayMode(1000, 1000, false);
         Gdx.input.setCursorCatched(true);
         
-        Gdx.gl20.glDepthMask(true);
+        //Gdx.gl20.glDepthMask(true);
 
         Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
-        Gdx.gl20.glDepthFunc(GL20.GL_LESS);
+        Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
         
         Gdx.gl20.glEnable(GL20.GL_BLEND);
-        Gdx.gl20.glBlendFunc(Gdx.gl20.GL_ONE, Gdx.gl20.GL_ONE);
-    }
+        Gdx.gl20.glBlendFunc(Gdx.gl20.GL_ONE, Gdx.gl20.GL_ONE);    }
 
     @Override
     public void render() {
@@ -117,6 +118,7 @@ public class TPGame extends ApplicationAdapter {
         
         spotLights.get(0).getDirection().get().rotateRad(new Vector3(1, 0, 1), 0.02f);
 
+        earlyZShader.render(cam, models, null);
         spotShader.render(cam, models, spotLights);
         pointShader.render(cam, models, pointLights);
         directionalShader.render(cam, models, directionalLights);
