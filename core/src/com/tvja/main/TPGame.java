@@ -29,8 +29,6 @@ public class TPGame extends ApplicationAdapter {
     ShaderProgram shaderProgram;
     FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
 
-    float angle = 0;
-    
     Shader directionalShader;
     Shader pointShader;
     Shader spotShader;
@@ -88,7 +86,7 @@ public class TPGame extends ApplicationAdapter {
 
         directionalLights.add(Light.newDirectional(new Vector3(1, 1, 1), new Vector3(1,1,1)));
         pointLights.add(Light.newPoint(new Vector3(1, 4, 1), new Vector3(1, 1, 1)));
-        spotLights.add(Light.newSpot(new Vector3(1,1,1), new Vector3(1,1,1), new Vector3(1,1,1), (float)Math.PI/3));
+        spotLights.add(Light.newSpot(new Vector3(0,5,0), new Vector3(0,1,0), new Vector3(0.8f,0.8f,0.8f), (float)Math.PI/10));
     }
 
     private void setupGdx() {
@@ -101,7 +99,7 @@ public class TPGame extends ApplicationAdapter {
         Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
         
         Gdx.gl20.glEnable(GL20.GL_BLEND);
-        Gdx.gl20.glBlendFunc(Gdx.gl20.GL_ONE, Gdx.gl20.GL_ONE);    }
+        Gdx.gl20.glBlendFunc(Gdx.gl20.GL_ONE, Gdx.gl20.GL_DST_COLOR);    }
 
     @Override
     public void render() {
@@ -115,8 +113,8 @@ public class TPGame extends ApplicationAdapter {
         cam.update();
 
         updateCameraType();
-        
-        spotLights.get(0).getDirection().get().rotateRad(new Vector3(1, 0, 1), 0.02f);
+
+        spotLights.get(0).getDirection().get().rotateRad(new Vector3(1, 0, 1), 0.0002f);
 
         earlyZShader.render(cam, models, null);
         spotShader.render(cam, models, spotLights);
