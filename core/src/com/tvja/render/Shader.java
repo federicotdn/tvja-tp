@@ -8,9 +8,6 @@ import com.tvja.utils.VecUtils;
 
 import java.util.List;
 
-/**
- * Created by Hobbit on 9/4/15.
- */
 public class Shader {
     protected ShaderProgram shaderProgram;
 
@@ -68,7 +65,6 @@ public class Shader {
             	model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);            	
             }
         }
-
 
         shaderProgram.end();
     }

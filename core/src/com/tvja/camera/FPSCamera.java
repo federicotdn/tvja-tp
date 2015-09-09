@@ -1,9 +1,6 @@
 package com.tvja.camera;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector3;
 
 public class FPSCamera extends PerspectiveCamera implements FPSControllableCamera {
 

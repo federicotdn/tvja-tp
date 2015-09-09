@@ -4,9 +4,6 @@ import com.badlogic.gdx.math.Vector3;
 
 import java.util.Optional;
 
-/**
- * Created by Hobbit on 9/4/15.
- */
 public class Light {
 	private static final float AMBIENT_MULT = 0.05f;
 	
@@ -33,6 +30,7 @@ public class Light {
         this.direction = direction;
         this.color = color;
         this.ambientColor = ambientColor;
+        
         if (angle != null) {
             if (Math.abs(angle) > Math.PI/2) {
                 angle = (float) Math.PI/2;

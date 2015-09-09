@@ -5,9 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
-/**
- * Created by Hobbit on 9/4/15.
- */
 public class ModelInstance {
     private Mesh mesh;
     private Texture tex;
@@ -51,7 +48,6 @@ public class ModelInstance {
 
         return this;
     }
-
 
     public Mesh getMesh() {
         return mesh;

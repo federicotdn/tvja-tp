@@ -92,14 +92,13 @@ public class TPGame extends ApplicationAdapter {
     private void setupGdx() {
         Gdx.graphics.setDisplayMode(1000, 1000, false);
         Gdx.input.setCursorCatched(true);
-        
-        //Gdx.gl20.glDepthMask(true);
 
         Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
         Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
         
         Gdx.gl20.glEnable(GL20.GL_BLEND);
-        Gdx.gl20.glBlendFunc(Gdx.gl20.GL_ONE, Gdx.gl20.GL_DST_COLOR);    }
+        Gdx.gl20.glBlendFunc(GL20.GL_ONE, GL20.GL_DST_COLOR);    
+    }
 
     @Override
     public void render() {
