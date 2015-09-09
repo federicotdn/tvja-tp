@@ -2,11 +2,14 @@ package com.tvja.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.tvja.main.TPGame;
+import com.tvja.main.TPGameBase;
+import com.tvja.main.TestGame;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new TPGame(), config);
+		config.title = "TVJA";
+		
+		new LwjglApplication(new TestGame(), config);
 	}
 }

@@ -24,7 +24,11 @@ public class Shader {
     }
 
     public void render(OpenGLCamera cam, List<ModelInstance> models, List<Light> lights) {
-        shaderProgram.begin();
+        if (cam == null || models == null || models.isEmpty()) {
+        	return;
+        }
+    	
+    	shaderProgram.begin();
 
         for (ModelInstance model : models) {
             Gdx.gl.glActiveTexture(0);
