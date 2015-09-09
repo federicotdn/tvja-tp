@@ -9,10 +9,12 @@ import com.tvja.utils.AssetUtils;
 
 public class TestGame extends TPGameBase {
 
-	Texture img, img2;
-	Mesh shipMesh;
-	Mesh cubeMesh;
+	private Texture img, img2;
+	private Mesh shipMesh;
+	private Mesh cubeMesh;
 
+	private float angle = 0;
+	
 	@Override
 	protected void init() {
 		// Initialize assets
@@ -37,8 +39,18 @@ public class TestGame extends TPGameBase {
 
 	@Override
 	protected void update() {
+		updateAngle();
 		
-
+		Light spot = spotLights.get(0);
+		spot.setPosition(new Vector3((float)Math.cos(angle)*3 + 3, 5, 0));
 	}
 
+	private void updateAngle() {
+		angle += 0.01f;
+		while (angle < 0)
+			angle += Math.PI * 2;
+		while (angle > Math.PI * 2)
+			angle -= Math.PI * 2;
+	}
+	
 }

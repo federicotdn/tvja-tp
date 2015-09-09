@@ -42,6 +42,10 @@ public class Light {
     public Optional<Vector3> getPosition() {
         return Optional.ofNullable(position);
     }
+    
+    public void setPosition(Vector3 position) {
+    	this.position = position;
+    }
 
     public  Optional<Vector3> getDirection() {
         return Optional.ofNullable(direction);

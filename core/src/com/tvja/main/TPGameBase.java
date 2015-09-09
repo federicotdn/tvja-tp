@@ -17,18 +17,18 @@ import java.util.List;
 
 public abstract class TPGameBase extends ApplicationAdapter {
 
-    FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
+    protected FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
 
-    Shader directionalShader;
-    Shader pointShader;
-    Shader spotShader;
-    Shader earlyZShader;
+    private Shader directionalShader;
+    private Shader pointShader;
+    private Shader spotShader;
+    private Shader earlyZShader;
 
-    List<ModelInstance> models = new ArrayList<>();
+    protected List<ModelInstance> models = new ArrayList<>();
 
-    List<Light> directionalLights = new ArrayList<>();
-    List<Light> spotLights = new ArrayList<>();
-    List<Light> pointLights = new ArrayList<>();
+    protected List<Light> directionalLights = new ArrayList<>();
+    protected List<Light> spotLights = new ArrayList<>();
+    protected List<Light> pointLights = new ArrayList<>();
     
     protected abstract void init();
     protected abstract void update();
