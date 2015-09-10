@@ -6,6 +6,7 @@ uniform vec4 u_ambient_color;
 
 uniform sampler2D u_texture;
 uniform vec4 u_cam_pos;
+uniform int u_shininess;
 
 uniform mat4 u_model_mat;
 uniform mat4 u_model_rotation_mat;
@@ -31,7 +32,7 @@ void main()
 	vec4 v_vec = normalize(u_cam_pos - world_pos);
 	vec4 r_vec = reflect(-normalize(u_light_direction), normal_w);
 
-	vec4 after_light_spec = max(0, pow(dot(r_vec, v_vec), 3)) * tex_color;
+	vec4 after_light_spec = max(0, pow(dot(r_vec, v_vec), u_shininess)) * tex_color;
 	vec4 specular_component = after_light_spec * u_light_color;
 	
 	vec4 final_color = vec4(ambient_component.xyz + diffuse_component.xyz + specular_component.xyz, 1);

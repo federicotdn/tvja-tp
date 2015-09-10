@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
 public class ModelInstance {
+	
+	private static final Integer DEFAULT_SHININESS = 3;
+	
     private Mesh mesh;
     private Texture tex;
     private Matrix4 t;
@@ -13,6 +16,7 @@ public class ModelInstance {
     private Matrix4 s;
     private Matrix4 trs;
     private boolean modified;
+    private Integer shininess;
 
     public ModelInstance(Mesh mesh, Texture tex) {
         this.mesh = mesh;
@@ -22,6 +26,16 @@ public class ModelInstance {
         s = new Matrix4();
         trs = new Matrix4();
         modified = false;
+        shininess = null;
+    }
+    
+    public ModelInstance setShininess(Integer sh) {
+    	shininess = sh;
+    	return this;
+    }
+    
+    public Integer getShininess() {
+    	return shininess == null ? DEFAULT_SHININESS : shininess;
     }
 
     public Matrix4 getR() {

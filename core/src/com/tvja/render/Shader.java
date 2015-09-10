@@ -47,6 +47,10 @@ public class Shader {
             if (shaderProgram.hasUniform("u_model_rotation_mat")) {
             	shaderProgram.setUniformMatrix("u_model_rotation_mat", model.getR());            	
             }
+            
+            if (shaderProgram.hasUniform("u_shininess")) {
+            	shaderProgram.setUniformi("u_shininess", model.getShininess());
+            }
 
             if (lights != null && !lights.isEmpty()) {
             	for (Light light : lights) {

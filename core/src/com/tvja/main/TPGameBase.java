@@ -24,11 +24,11 @@ public abstract class TPGameBase extends ApplicationAdapter {
     private Shader spotShader;
     private Shader earlyZShader;
 
-    protected List<ModelInstance> models = new ArrayList<>();
+    final protected List<ModelInstance> models = new ArrayList<>();
 
-    protected List<Light> directionalLights = new ArrayList<>();
-    protected List<Light> spotLights = new ArrayList<>();
-    protected List<Light> pointLights = new ArrayList<>();
+    final protected List<Light> directionalLights = new ArrayList<>();
+    final protected List<Light> spotLights = new ArrayList<>();
+    final protected List<Light> pointLights = new ArrayList<>();
     
     protected abstract void init();
     protected abstract void update();

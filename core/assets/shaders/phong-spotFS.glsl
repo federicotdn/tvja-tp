@@ -3,6 +3,7 @@
 uniform vec4 u_light_position;
 uniform vec4 u_light_direction;
 uniform float u_cutoff_angle;
+uniform int u_shininess;
 
 uniform vec4 u_light_color;
 uniform vec4 u_ambient_color;
@@ -41,7 +42,7 @@ void main()
 	vec4 v_vec = normalize(u_cam_pos - position_w);
 	vec4 r_vec = reflect(-normalize(u_light_direction), normal_w);
 
-	vec4 after_light_spec = max(0, pow(dot(r_vec, v_vec), 3)) * tex_color;
+	vec4 after_light_spec = max(0, pow(dot(r_vec, v_vec), u_shininess)) * tex_color;
 	vec4 specular_component = after_light_spec * u_light_color;
 
 
