@@ -2,7 +2,6 @@
 
 uniform vec4 u_light_position;
 uniform vec4 u_light_color;
-uniform vec4 u_ambient_color;
 
 uniform sampler2D u_texture;
 uniform vec4 u_cam_pos;
@@ -15,6 +14,8 @@ varying vec4 v_position;
 varying vec4 v_normal;
 varying vec2 v_texCoords;
 
+//%include shaders/utils.glsl
+
 void main()
 {
 	vec4 tex_color = texture2D(u_texture, v_texCoords);
@@ -22,20 +23,12 @@ void main()
 	vec4 position_w = u_model_mat * v_position;
 
 	vec4 light_direction = normalize(u_light_position - position_w);
-
+	
 	/* DIFFUSE */
-	vec4 after_light = max(0, (dot(normal_w, light_direction))) * tex_color;
-	vec4 diffuse_component = after_light * u_light_color;
-
-	/* AMBIENT */
-	vec4 ambient_component = u_ambient_color;
+	vec4 diffuse_component = get_diffuse_component(normal_w, light_direction, tex_color, u_light_color);
 
 	/* SPECULAR */
-	vec4 v_vec = normalize(u_cam_pos - position_w);
-	vec4 r_vec = reflect(-normalize(light_direction), normal_w);
-
-	vec4 after_light_spec = max(0, pow(dot(r_vec, v_vec), u_shininess)) * tex_color;
-	vec4 specular_component = after_light_spec * u_light_color;
-
-	gl_FragColor = vec4(ambient_component.xyz + diffuse_component.xyz + specular_component.xyz, 1);
+	vec4 specular_component = get_specular_component(normal_w, light_direction, tex_color, u_light_color, u_shininess, position_w, u_cam_pos);
+	
+	gl_FragColor = vec4(diffuse_component.xyz + specular_component.xyz, 1);
 }

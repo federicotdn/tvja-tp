@@ -5,31 +5,28 @@ import com.badlogic.gdx.math.Vector3;
 import java.util.Optional;
 
 public class Light {
-	private static final float AMBIENT_MULT = 0.05f;
 	
     protected Vector3 position;
     protected Vector3 direction;
     protected Vector3 color;
-    protected Vector3 ambientColor;
     private Float angle;
 
     public static Light newDirectional(Vector3 direction, Vector3 color) {
-    	return new Light(null, direction, color, new Vector3(color).scl(AMBIENT_MULT), null);
+    	return new Light(null, direction, color, null);
     }
     
     public static Light newPoint(Vector3 position, Vector3 color) {
-    	return new Light(position, null, color, new Vector3(color).scl(AMBIENT_MULT), null);
+    	return new Light(position, null, color, null);
     }
     
     public static Light newSpot(Vector3 position, Vector3 direction, Vector3 color, Float angle) {
-    	return new Light(position, direction, color, new Vector3(color).scl(AMBIENT_MULT), angle);
+    	return new Light(position, direction, color, angle);
     }
     
-    public Light(Vector3 position, Vector3 direction, Vector3 color, Vector3 ambientColor, Float angle) {
+    public Light(Vector3 position, Vector3 direction, Vector3 color,  Float angle) {
         this.position = position;
         this.direction = direction;
         this.color = color;
-        this.ambientColor = ambientColor;
         
         if (angle != null) {
             if (Math.abs(angle) > Math.PI/2) {
@@ -57,10 +54,6 @@ public class Light {
 
     public Vector3 getColor() {
         return color;
-    }
-
-    public Vector3 getAmbientColor() {
-        return ambientColor;
     }
 
     public Optional<Float> getAngle() {

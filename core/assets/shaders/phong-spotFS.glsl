@@ -18,6 +18,8 @@ varying vec4 v_position;
 varying vec4 v_normal;
 varying vec2 v_texCoords;
 
+//%include shaders/utils.glsl
+
 void main()
 {
 	vec4 tex_color = texture2D(u_texture, v_texCoords);
@@ -30,21 +32,12 @@ void main()
 	if ((dot(light_direction_surface, u_light_direction)) < u_cutoff_angle) {
 		cutoff_multiplier = 0.0001;
 	}
-
+	
 	/* DIFFUSE */
-	vec4 after_light = max(0, (dot(normal_w, u_light_direction))) * tex_color;
-	vec4 diffuse_component = after_light * u_light_color;
-
-	/* AMBIENT */
-	vec4 ambient_component = u_ambient_color;
+	vec4 diffuse_component = get_diffuse_component(normal_w, u_light_direction, tex_color, u_light_color);
 
 	/* SPECULAR */
-	vec4 v_vec = normalize(u_cam_pos - position_w);
-	vec4 r_vec = reflect(-normalize(u_light_direction), normal_w);
+	vec4 specular_component = get_specular_component(normal_w, u_light_direction, tex_color, u_light_color, u_shininess, u_model_mat * v_position, u_cam_pos);
 
-	vec4 after_light_spec = max(0, pow(dot(r_vec, v_vec), u_shininess)) * tex_color;
-	vec4 specular_component = after_light_spec * u_light_color;
-
-
-	gl_FragColor = vec4(ambient_component.xyz + diffuse_component.xyz * cutoff_multiplier + specular_component.xyz * cutoff_multiplier, 1);
+	gl_FragColor = vec4(diffuse_component.xyz * cutoff_multiplier + specular_component.xyz * cutoff_multiplier, 1);
 }
