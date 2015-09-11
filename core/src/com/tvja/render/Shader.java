@@ -3,6 +3,7 @@ package com.tvja.render;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Vector3;
 import com.tvja.camera.OpenGLCamera;
 import com.tvja.utils.VecUtils;
 
@@ -41,8 +42,16 @@ public class Shader {
 		
 		return String.join(System.getProperty("line.separator"), lines);
 	}
-
+	
+	public void render(OpenGLCamera cam, List<ModelInstance> models, Vector3 ambient) {
+		render(cam, models, null, ambient);
+	}
+	
 	public void render(OpenGLCamera cam, List<ModelInstance> models, List<Light> lights) {
+		render(cam, models, lights, null);
+	}
+
+	public void render(OpenGLCamera cam, List<ModelInstance> models, List<Light> lights, Vector3 ambient) {
 		if (cam == null || models == null || models.isEmpty()) {
 			return;
 		}
@@ -69,6 +78,10 @@ public class Shader {
 
 			if (shaderProgram.hasUniform("u_shininess")) {
 				shaderProgram.setUniformi("u_shininess", model.getShininess());
+			}
+			
+			if (ambient != null && shaderProgram.hasUniform("u_ambient_color")) {
+				shaderProgram.setUniform4fv("u_ambient_color", VecUtils.toVec4f(ambient), 0, 4);
 			}
 
 			if (lights != null && !lights.isEmpty()) {

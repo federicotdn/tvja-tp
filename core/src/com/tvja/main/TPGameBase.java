@@ -17,12 +17,14 @@ import java.util.List;
 
 public abstract class TPGameBase extends ApplicationAdapter {
 
+	private static final Vector3 COLOR_BLACK = new Vector3(0, 0, 0);
+	
     protected FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
 
     private Shader directionalShader;
     private Shader pointShader;
     private Shader spotShader;
-    private Shader earlyZShader;
+    private Shader singleColorShader;
 
     final protected List<ModelInstance> models = new ArrayList<>();
 
@@ -32,7 +34,8 @@ public abstract class TPGameBase extends ApplicationAdapter {
     
     protected abstract void init();
     protected abstract void update();
-
+    protected abstract Vector3 getAmbientLight();
+    
     @Override
     public void create() {
         setupGdx();
@@ -40,7 +43,7 @@ public abstract class TPGameBase extends ApplicationAdapter {
         directionalShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-directionalFS.glsl");
         pointShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-pointFS.glsl");
         spotShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-spotFS.glsl");
-        earlyZShader = new Shader("shaders/defaultVS.glsl", "shaders/early-zFS.glsl");
+        singleColorShader = new Shader("shaders/defaultVS.glsl", "shaders/single-colorFS.glsl");
         
         init();
     }
@@ -67,7 +70,8 @@ public abstract class TPGameBase extends ApplicationAdapter {
         cam.update();
         updateCameraType();
 
-        earlyZShader.render(cam, models, null);
+        singleColorShader.render(cam, models, COLOR_BLACK);
+        singleColorShader.render(cam, models, getAmbientLight());
         spotShader.render(cam, models, spotLights);
         pointShader.render(cam, models, pointLights);
         directionalShader.render(cam, models, directionalLights);

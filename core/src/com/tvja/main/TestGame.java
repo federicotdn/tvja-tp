@@ -15,6 +15,8 @@ public class TestGame extends TPGameBase {
 
 	private float angle = 0;
 	
+	private Vector3 ambientLight;
+	
 	@Override
 	protected void init() {
 		// Initialize assets
@@ -34,7 +36,8 @@ public class TestGame extends TPGameBase {
 		pointLights.add(Light.newPoint(new Vector3(1, 4, 1), new Vector3(0.2f, 0.2f, 0.2f)));
 		spotLights.add(Light.newSpot(new Vector3(0, 5, 0), new Vector3(0, 1, 0), new Vector3(0.8f, 0.8f, 0.8f),
 				(float) Math.PI / 10));
-
+		
+		ambientLight = new Vector3(0.7f, 0.7f, 0.7f);
 	}
 
 	@Override
@@ -55,5 +58,9 @@ public class TestGame extends TPGameBase {
 		while (angle > Math.PI * 2)
 			angle -= Math.PI * 2;
 	}
-	
+
+	@Override
+	protected Vector3 getAmbientLight() {
+		return ambientLight;
+	}
 }
