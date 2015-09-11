@@ -4,6 +4,8 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.tvja.camera.FPSCamera;
 import com.tvja.camera.FPSControllableCamera;
@@ -13,7 +15,9 @@ import com.tvja.render.ModelInstance;
 import com.tvja.render.Shader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class TPGameBase extends ApplicationAdapter {
 
@@ -31,6 +35,8 @@ public abstract class TPGameBase extends ApplicationAdapter {
     final protected List<Light> directionalLights = new ArrayList<>();
     final protected List<Light> spotLights = new ArrayList<>();
     final protected List<Light> pointLights = new ArrayList<>();
+    
+    final private Map<Light, FrameBuffer> shadowMaps = new HashMap<>();
     
     protected abstract void init();
     protected abstract void update();
@@ -56,7 +62,7 @@ public abstract class TPGameBase extends ApplicationAdapter {
         Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
         
         Gdx.gl20.glEnable(GL20.GL_BLEND);
-        Gdx.gl20.glBlendFunc(GL20.GL_ONE, GL20.GL_DST_COLOR);    
+        Gdx.gl20.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE);    
     }
 
     @Override
@@ -69,12 +75,17 @@ public abstract class TPGameBase extends ApplicationAdapter {
 
         cam.update();
         updateCameraType();
+        
+		FrameBuffer b = new FrameBuffer(Format.RGBA8888, 1024, 1024, true);
+		b.begin();
+		b.end();
 
         singleColorShader.render(cam, models, COLOR_BLACK);
         singleColorShader.render(cam, models, getAmbientLight());
         spotShader.render(cam, models, spotLights);
         pointShader.render(cam, models, pointLights);
         directionalShader.render(cam, models, directionalLights);
+        
     }
 
     private void updateCameraType() {
