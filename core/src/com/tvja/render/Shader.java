@@ -3,6 +3,7 @@ package com.tvja.render;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.tvja.camera.OpenGLCamera;
 import com.tvja.utils.VecUtils;
@@ -25,6 +26,9 @@ public class Shader {
 
 	}
 
+	/*
+	 *  :-(
+	 */
 	private String buildShaderString(String fileName) {
 		String[] lines = Gdx.files.internal(fileName).readString().split("\\r?\\n");
 		for (int i = 0; i < lines.length; i++) {
@@ -62,42 +66,25 @@ public class Shader {
 			Gdx.gl.glActiveTexture(0);
 			model.getTex().bind(0);
 
-			shaderProgram.setUniformMatrix("u_mvp", cam.getViewProjection().mul(model.getTRS()));
+			setUniformMat4("u_mvp", cam.getViewProjection().mul(model.getTRS()));
+			setUniform4fv("u_cam_pos", VecUtils.toVec4f(cam.getPosition()));
+			setUniformMat4("u_model_mat", model.getTRS());
+			setUniformMat4("u_model_rotation_mat", model.getR());
 
-			if (shaderProgram.hasUniform("u_texture")) {
-				shaderProgram.setUniformi("u_texture", 0);
-			}
-
-			if (shaderProgram.hasUniform("u_model_mat")) {
-				shaderProgram.setUniformMatrix("u_model_mat", model.getTRS());
-			}
-
-			if (shaderProgram.hasUniform("u_model_rotation_mat")) {
-				shaderProgram.setUniformMatrix("u_model_rotation_mat", model.getR());
-			}
-
-			if (shaderProgram.hasUniform("u_shininess")) {
-				shaderProgram.setUniformi("u_shininess", model.getShininess());
-			}
+			setUniformi("u_texture", 0);
+			setUniformi("u_shininess", model.getShininess());
 			
-			if (ambient != null && shaderProgram.hasUniform("u_ambient_color")) {
-				shaderProgram.setUniform4fv("u_ambient_color", VecUtils.toVec4f(ambient), 0, 4);
+			if (ambient != null) {
+				setUniform4fv("u_ambient_color", VecUtils.toVec4f(ambient));
 			}
 
 			if (lights != null && !lights.isEmpty()) {
 				for (Light light : lights) {
-					light.getPosition()
-							.ifPresent(v -> shaderProgram.setUniform4fv("u_light_position", VecUtils.toVec4f(v), 0, 4));
-					light.getDirection().ifPresent(
-							d -> shaderProgram.setUniform4fv("u_light_direction", VecUtils.toVec4f(d), 0, 4));
+					setUniform4fv("u_light_position", VecUtils.toVec4f(light.getPosition()));
+					setUniform4fv("u_light_direction", VecUtils.toVec4f(light.getDirection()));
 					light.getAngle().ifPresent(a -> shaderProgram.setUniformf("u_cutoff_angle", a));
-
-					shaderProgram.setUniform4fv("u_light_color", VecUtils.toVec4f(light.getColor()), 0, 4);
-
-					if (shaderProgram.hasUniform("u_cam_pos")) {
-						shaderProgram.setUniform4fv("u_cam_pos", VecUtils.toVec4f(cam.getPosition()), 0, 4);
-					}
-
+					setUniform4fv("u_light_color", VecUtils.toVec4f(light.getColor()));
+	
 					model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
 				}
 			} else {
@@ -106,5 +93,23 @@ public class Shader {
 		}
 
 		shaderProgram.end();
+	}
+	
+	void setUniform4fv(String name, float[] val) {
+		if (shaderProgram.hasUniform(name)) {
+			shaderProgram.setUniform4fv(name, val, 0, 4);
+		}
+	}
+	
+	void setUniformi(String name, int val) {
+		if (shaderProgram.hasUniform(name)) {
+			shaderProgram.setUniformi(name, val);
+		}		
+	}
+	
+	void setUniformMat4(String name, Matrix4 val) {
+		if (shaderProgram.hasUniform(name)) {
+			shaderProgram.setUniformMatrix(name, val);
+		}		
 	}
 }

@@ -26,7 +26,6 @@ public class OrthoFPSCamera extends OrthogonalCamera implements FPSControllableC
 
 	@Override
 	public void update() {
-		controller.updatePositionOrientation(position, orientation);
+		controller.updatePositionOrientation(this);
 	}
-
 }

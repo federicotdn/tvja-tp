@@ -1,7 +1,5 @@
 package com.tvja.camera;
 
-import com.badlogic.gdx.math.Matrix4;
-
 public class FPSCamera extends PerspectiveCamera implements FPSControllableCamera {
 
 	private static final float DEFAULT_FOVX = 60.0f;
@@ -22,13 +20,8 @@ public class FPSCamera extends PerspectiveCamera implements FPSControllableCamer
 	}
 	
 	@Override
-	protected Matrix4 getRzMatrix() {
-		return new Matrix4(); // Never rotate around Z-axis.
-	}
-	
-	@Override
 	public void update() {
-		controller.updatePositionOrientation(position, orientation);
+		controller.updatePositionOrientation(this);
 	}
 
 	@Override

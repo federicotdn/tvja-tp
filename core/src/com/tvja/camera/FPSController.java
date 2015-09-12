@@ -3,6 +3,7 @@ package com.tvja.camera;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
+import com.tvja.render.WorldObject;
 
 public class FPSController {
 	
@@ -35,9 +36,15 @@ public class FPSController {
 		return right.nor();
 	}
 	
-	public void updatePositionOrientation(Vector3 pos, Vector3 ori) {
+	public void updatePositionOrientation(WorldObject<?> wo) {
+		Vector3 ori = wo.getOrientation();
+		Vector3 pos = wo.getPosition();
+
 		updateOrientation(ori);
 		updatePosition(pos, ori);
+
+		wo.setPosition(pos);
+		wo.setOrientation(ori);
 	}
 	
 	private void updatePosition(Vector3 position, Vector3 orientation) {

@@ -14,5 +14,4 @@ public class OrthogonalCamera extends Camera {
 				                           0, 0, -2 / (farZ - nearZ), -(nearZ + farZ) / (farZ - nearZ), 
 				                           0, 0, 0, 1 }).tra();
 	}
-
 }

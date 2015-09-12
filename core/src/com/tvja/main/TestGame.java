@@ -34,10 +34,10 @@ public class TestGame extends TPGameBase {
 
 		directionalLights.add(Light.newDirectional(new Vector3(0, 1, 1), new Vector3(1, 1, 1)));
 		pointLights.add(Light.newPoint(new Vector3(1, 4, 1), new Vector3(0.2f, 0.2f, 0.2f)));
-		spotLights.add(Light.newSpot(new Vector3(0, 5, 0), new Vector3(0, 1, 0), new Vector3(0.8f, 0.8f, 0.8f),
+		spotLights.add(Light.newSpot(new Vector3(0, 5, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(0.3f, 0.3f, 0.3f),
 				(float) Math.PI / 10));
 		
-		ambientLight = new Vector3(0.7f, 0.7f, 0.7f);
+		ambientLight = new Vector3(0.1f, 0.1f, 0.1f);
 	}
 
 	@Override
@@ -47,8 +47,8 @@ public class TestGame extends TPGameBase {
 		Light spot = spotLights.get(0);
 		spot.setPosition(new Vector3((float)Math.cos(angle)*3 + 3, 5, 0));
 		
-		Light directional = directionalLights.get(0);
-		directional.setDirection(new Vector3(0, 0, (float)Math.cos(angle) * 2));
+//		Light directional = directionalLights.get(0);
+//		directional.setOrientation(new Vector3(0, 0, angle));
 	}
 
 	private void updateAngle() {
