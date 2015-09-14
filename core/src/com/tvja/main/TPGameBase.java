@@ -4,6 +4,8 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.tvja.camera.FPSController;
 import com.tvja.camera.OrthogonalCamera;
@@ -28,6 +30,8 @@ public abstract class TPGameBase extends ApplicationAdapter {
     private Shader spotShader;
     private Shader singleColorShader;
 
+    private FrameBuffer frameBuffer;
+
     final protected List<ModelInstance> models = new ArrayList<>();
 
     final protected List<Light> directionalLights = new ArrayList<>();
@@ -44,6 +48,7 @@ public abstract class TPGameBase extends ApplicationAdapter {
     public void create() {
         setupGdx();
 
+        frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, 1024, 1024, true);
         directionalShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-directionalFS.glsl");
         pointShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-pointFS.glsl");
         spotShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-spotFS.glsl");
@@ -73,6 +78,14 @@ public abstract class TPGameBase extends ApplicationAdapter {
 
         controller.updatePositionOrientation(cam);
         updateCameraType();
+
+        frameBuffer.begin();
+        singleColorShader.render(spotLights.get(0), models, COLOR_BLACK);
+        frameBuffer.end();
+
+        int shadowTexture = frameBuffer.getDepthBufferHandle();
+        Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE1);
+        Gdx.gl20.glBindTexture(Gdx.gl20.GL_TEXTURE_2D, shadowTexture);
 
         singleColorShader.render(cam, models, COLOR_BLACK);
         singleColorShader.render(cam, models, getAmbientLight());

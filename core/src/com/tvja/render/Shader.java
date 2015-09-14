@@ -62,8 +62,8 @@ public class Shader {
 		shaderProgram.begin();
 
 		for (ModelInstance model : models) {
-			Gdx.gl.glActiveTexture(0);
-			model.getTex().bind(0);
+			Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+			model.getTex().bind(Gdx.gl20.GL_TEXTURE_2D);
 
 			setUniformMat4("u_mvp", view.getViewProjection().mul(model.getTRS()));
 			setUniform4fv("u_cam_pos", MathUtils.toVec4f(view.getPosition()));
