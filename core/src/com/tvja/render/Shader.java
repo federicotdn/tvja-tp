@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.tvja.camera.OpenGLCamera;
-import com.tvja.utils.VecUtils;
+import com.tvja.utils.MathUtils;
 
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class Shader {
 			model.getTex().bind(0);
 
 			setUniformMat4("u_mvp", cam.getViewProjection().mul(model.getTRS()));
-			setUniform4fv("u_cam_pos", VecUtils.toVec4f(cam.getPosition()));
+			setUniform4fv("u_cam_pos", MathUtils.toVec4f(cam.getPosition()));
 			setUniformMat4("u_model_mat", model.getTRS());
 			setUniformMat4("u_model_rotation_mat", model.getR());
 
@@ -75,15 +75,15 @@ public class Shader {
 			setUniformi("u_shininess", model.getShininess());
 			
 			if (ambient != null) {
-				setUniform4fv("u_ambient_color", VecUtils.toVec4f(ambient));
+				setUniform4fv("u_ambient_color", MathUtils.toVec4f(ambient));
 			}
 
 			if (lights != null && !lights.isEmpty()) {
 				for (Light light : lights) {
-					setUniform4fv("u_light_position", VecUtils.toVec4f(light.getPosition()));
-					setUniform4fv("u_light_direction", VecUtils.toVec4f(light.getDirection()));
+					setUniform4fv("u_light_position", MathUtils.toVec4f(light.getPosition()));
+					setUniform4fv("u_light_direction", MathUtils.toVec4f(light.getDirection()));
 					light.getAngle().ifPresent(a -> shaderProgram.setUniformf("u_cutoff_angle", a));
-					setUniform4fv("u_light_color", VecUtils.toVec4f(light.getColor()));
+					setUniform4fv("u_light_color", MathUtils.toVec4f(light.getColor()));
 	
 					model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
 				}

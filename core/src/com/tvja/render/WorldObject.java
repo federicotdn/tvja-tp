@@ -2,7 +2,7 @@ package com.tvja.render;
 
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.tvja.utils.VecUtils;
+import com.tvja.utils.MathUtils;
 
 /*
  * "WorldObject changes everything.  It just works." -Steve Jobs, 2014
@@ -62,7 +62,7 @@ public abstract class WorldObject<T extends WorldObject<T>> {
 	}
 	
 	public Vector3 getDirection() {
-		return VecUtils.toDirection(orientation);
+		return MathUtils.toDirection(orientation);
 	}
 
 	public void setOrientation(Vector3 ori) {

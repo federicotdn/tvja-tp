@@ -32,9 +32,9 @@ public class TestGame extends TPGameBase {
 		models.add(new ModelInstance(shipMesh, img).translate(6, 0, 0));
 		models.add(new ModelInstance(cubeMesh, img2).translate(-1000, -1, -1000).scale(2000, 0.5f, 2000).setShininess(4));
 
-		directionalLights.add(Light.newDirectional(new Vector3(0, 1, 1), new Vector3(1, 1, 1)));
-		pointLights.add(Light.newPoint(new Vector3(1, 4, 1), new Vector3(0.2f, 0.2f, 0.2f)));
-		spotLights.add(Light.newSpot(new Vector3(0, 5, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(0.3f, 0.3f, 0.3f),
+		//directionalLights.add(Light.newDirectional(new Vector3(0, 1, 1), new Vector3(1, 1, 1)));
+		//pointLights.add(Light.newPoint(new Vector3(1, 4, 1), new Vector3(0.2f, 0.2f, 0.2f)));
+		spotLights.add(Light.newSpot(new Vector3(0, 5, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(0.5f, 0.5f, 0.5f),
 				(float) Math.PI / 10));
 		
 		ambientLight = new Vector3(0.1f, 0.1f, 0.1f);
