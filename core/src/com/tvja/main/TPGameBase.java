@@ -5,12 +5,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector3;
-import com.tvja.camera.FPSCamera;
-import com.tvja.camera.FPSControllableCamera;
-import com.tvja.camera.OrthoFPSCamera;
+import com.tvja.camera.FPSController;
+import com.tvja.camera.OrthogonalCamera;
+import com.tvja.camera.PerspectiveCamera;
 import com.tvja.render.Light;
 import com.tvja.render.ModelInstance;
 import com.tvja.render.Shader;
+import com.tvja.render.ViewWorldObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +19,9 @@ import java.util.List;
 public abstract class TPGameBase extends ApplicationAdapter {
 
 	private static final Vector3 COLOR_BLACK = new Vector3(0, 0, 0);
-	
-    protected FPSControllableCamera cam = new FPSCamera(0.1f, 0.01f);
+
+    private FPSController controller = new FPSController();
+    protected ViewWorldObject<?> cam = new PerspectiveCamera();
 
     private Shader directionalShader;
     private Shader pointShader;
@@ -69,7 +71,7 @@ public abstract class TPGameBase extends ApplicationAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        cam.update();
+        controller.updatePositionOrientation(cam);
         updateCameraType();
 
         singleColorShader.render(cam, models, COLOR_BLACK);
@@ -84,13 +86,13 @@ public abstract class TPGameBase extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Keys.X)) {
             Vector3 pos = cam.getPosition();
             Vector3 ori = cam.getOrientation();
-            cam = new FPSCamera(0.1f, 0.01f);
+            cam = new PerspectiveCamera();
             cam.setOrientation(ori);
             cam.setPosition(pos);
         } else if (Gdx.input.isKeyPressed(Keys.C)) {
             Vector3 pos = cam.getPosition();
             Vector3 ori = cam.getOrientation();
-            cam = new OrthoFPSCamera(0.1f, 0.01f);
+            cam = new OrthogonalCamera();
             cam.setOrientation(ori);
             cam.setPosition(pos);
         }

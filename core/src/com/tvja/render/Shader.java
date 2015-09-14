@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.tvja.camera.OpenGLCamera;
 import com.tvja.utils.MathUtils;
 
 import java.util.List;
@@ -47,16 +46,16 @@ public class Shader {
 		return String.join(System.getProperty("line.separator"), lines);
 	}
 	
-	public void render(OpenGLCamera cam, List<ModelInstance> models, Vector3 ambient) {
-		render(cam, models, null, ambient);
+	public void render(ViewWorldObject view, List<ModelInstance> models, Vector3 ambient) {
+		render(view, models, null, ambient);
 	}
 	
-	public void render(OpenGLCamera cam, List<ModelInstance> models, List<Light> lights) {
-		render(cam, models, lights, null);
+	public void render(ViewWorldObject view, List<ModelInstance> models, List<Light> lights) {
+		render(view, models, lights, null);
 	}
 
-	public void render(OpenGLCamera cam, List<ModelInstance> models, List<Light> lights, Vector3 ambient) {
-		if (cam == null || models == null || models.isEmpty()) {
+	public void render(ViewWorldObject view, List<ModelInstance> models, List<Light> lights, Vector3 ambient) {
+		if (view == null || models == null || models.isEmpty()) {
 			return;
 		}
 
@@ -66,8 +65,8 @@ public class Shader {
 			Gdx.gl.glActiveTexture(0);
 			model.getTex().bind(0);
 
-			setUniformMat4("u_mvp", cam.getViewProjection().mul(model.getTRS()));
-			setUniform4fv("u_cam_pos", MathUtils.toVec4f(cam.getPosition()));
+			setUniformMat4("u_mvp", view.getViewProjection().mul(model.getTRS()));
+			setUniform4fv("u_cam_pos", MathUtils.toVec4f(view.getPosition()));
 			setUniformMat4("u_model_mat", model.getTRS());
 			setUniformMat4("u_model_rotation_mat", model.getR());
 

@@ -1,15 +1,13 @@
 package com.tvja.render;
 
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.tvja.utils.MathUtils;
 
 import java.util.Optional;
 
-public class Light extends WorldObject<Light> {
+public class Light extends ViewWorldObject<Light> {
     protected Vector3 color;
     private Float angle;
-    private Matrix4 projection;
 
     public static Light newDirectional(Vector3 orientation, Vector3 color) {
     	return new Light(new Vector3(), orientation, color, null);
@@ -49,9 +47,5 @@ public class Light extends WorldObject<Light> {
 	@Override
 	protected Light getThis() {
 		return this;
-	}
-	
-	public Matrix4 getViewProjection() {
-		return projection.cpy().mul(getTRS().inv());
 	}
 }
