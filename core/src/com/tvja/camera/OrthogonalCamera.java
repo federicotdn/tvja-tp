@@ -3,7 +3,7 @@ package com.tvja.camera;
 import com.tvja.render.ViewWorldObject;
 import com.tvja.utils.MathUtils;
 
-public class OrthogonalCamera extends ViewWorldObject<OrthogonalCamera> {
+public class OrthogonalCamera extends ViewWorldObject {
 
 	private static final float DEFAULT_WIDTH = 5.0f;
 	private static final float DEFAULT_HEIGHT = 5.0f;
@@ -16,9 +16,5 @@ public class OrthogonalCamera extends ViewWorldObject<OrthogonalCamera> {
 
 	public OrthogonalCamera() {
 		this(DEFAULT_NEARZ, DEFAULT_FARZ, DEFAULT_HEIGHT, DEFAULT_WIDTH);
-	}
-	@Override
-	protected OrthogonalCamera getThis() {
-		return this;
 	}
 }

@@ -5,7 +5,7 @@ import com.tvja.utils.MathUtils;
 
 import java.util.Optional;
 
-public class Light extends ViewWorldObject<Light> {
+public class Light extends ViewWorldObject {
     protected Vector3 color;
     private Float angle;
 
@@ -43,9 +43,4 @@ public class Light extends ViewWorldObject<Light> {
     public Optional<Float> getAngle() {
         return Optional.ofNullable(angle);
     }
-
-	@Override
-	protected Light getThis() {
-		return this;
-	}
 }

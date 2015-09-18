@@ -3,7 +3,7 @@ package com.tvja.camera;
 import com.tvja.render.ViewWorldObject;
 import com.tvja.utils.MathUtils;
 
-public class PerspectiveCamera extends ViewWorldObject<PerspectiveCamera> {
+public class PerspectiveCamera extends ViewWorldObject {
 	private static final float DEFAULT_FOVX = 60.0f;
 	private static final float DEFAULT_FOVY = 60.0f;
 	private static final float DEFAULT_NEARZ = 0.1f;
@@ -15,10 +15,5 @@ public class PerspectiveCamera extends ViewWorldObject<PerspectiveCamera> {
 
 	public PerspectiveCamera() {
 		this(DEFAULT_NEARZ, DEFAULT_FARZ, DEFAULT_FOVX, DEFAULT_FOVY);
-	}
-
-	@Override
-	protected PerspectiveCamera getThis() {
-		return this;
 	}
 }

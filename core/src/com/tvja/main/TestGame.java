@@ -27,12 +27,26 @@ public class TestGame extends TPGameBase {
 		cubeMesh = AssetUtils.meshFromFile("models/cube-textures.obj");
 
 		models.add(new ModelInstance(shipMesh, img));
-		models.add(new ModelInstance(shipMesh, img).translate(2, 0, 0));
-		models.add(new ModelInstance(shipMesh, img).translate(4, 0, 0));
-		models.add(new ModelInstance(shipMesh, img).translate(6, 0, 0));
-		models.add(new ModelInstance(cubeMesh, img2).translate(-1000, -1, -1000).scale(2000, 0.5f, 2000).setShininess(4));
 
-		//directionalLights.add(Light.newDirectional(new Vector3(0, 1, 1), new Vector3(1, 1, 1)));
+		ModelInstance mi = new ModelInstance(shipMesh, img);
+		mi.translate(2, 0, 0);
+		models.add(mi);
+
+		mi = new ModelInstance(shipMesh, img);
+		mi.translate(4, 0, 0);
+		models.add(mi);
+		
+		mi = new ModelInstance(shipMesh, img);
+		mi.translate(6, 0, 0);
+		models.add(mi);
+
+		mi = new ModelInstance(cubeMesh, img2);
+		mi.translate(-1000, -1, -1000);
+		mi.scale(2000, 0.5f, 2000);
+		mi.setShininess(4);
+		models.add(mi);
+		
+		directionalLights.add(Light.newDirectional(new Vector3(0, 1, 1), new Vector3(1, 1, 1)));
 		//pointLights.add(Light.newPoint(new Vector3(1, 4, 1), new Vector3(0.2f, 0.2f, 0.2f)));
 		spotLights.add(Light.newSpot(new Vector3(0, 5, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(0.5f, 0.5f, 0.5f),
 				(float) Math.PI / 10));

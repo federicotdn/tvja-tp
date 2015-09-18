@@ -22,7 +22,6 @@ public class Shader {
 			System.out.println(shaderProgram.getLog());
 			throw new IllegalStateException("Unable to compile GLSL shader.");
 		}
-
 	}
 
 	/*
@@ -53,6 +52,30 @@ public class Shader {
 	public void render(ViewWorldObject view, List<ModelInstance> models, List<Light> lights) {
 		render(view, models, lights, null);
 	}
+	
+	public void renderFullscreen(ViewWorldObject view, ModelInstance quad) {
+		setUniformi("u_texture", 2);
+		setUniformMat4("u_mvp", new Matrix4());
+		quad.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
+	}
+	
+	public void renderShadow(Light light, ViewWorldObject cam, List<ModelInstance> models) {
+		if (light == null || cam == null || models == null || models.isEmpty()) {
+			return;
+		}
+		
+		shaderProgram.begin();
+		
+		setUniformi("u_shadow_map", 1);
+		
+		for (ModelInstance model : models) {
+			setUniformMat4("u_mvp", cam.getViewProjection().mul(model.getTRS()));
+			setUniformMat4("u_light_mvp", light.getViewProjection().mul(model.getTRS()));
+			model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
+		}
+		
+		shaderProgram.end();
+	}
 
 	public void render(ViewWorldObject view, List<ModelInstance> models, List<Light> lights, Vector3 ambient) {
 		if (view == null || models == null || models.isEmpty()) {
@@ -63,14 +86,14 @@ public class Shader {
 
 		for (ModelInstance model : models) {
 			Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-			model.getTex().bind(Gdx.gl20.GL_TEXTURE_2D);
+			model.getTex().bind();
 
 			setUniformMat4("u_mvp", view.getViewProjection().mul(model.getTRS()));
 			setUniform4fv("u_cam_pos", MathUtils.toVec4f(view.getPosition()));
 			setUniformMat4("u_model_mat", model.getTRS());
 			setUniformMat4("u_model_rotation_mat", model.getR());
 
-			setUniformi("u_texture", 0);
+			setUniformi("u_texture", 0); // Must match with glActiveTexture call
 			setUniformi("u_shininess", model.getShininess());
 			
 			if (ambient != null) {

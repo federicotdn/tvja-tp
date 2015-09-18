@@ -7,7 +7,7 @@ import com.tvja.utils.MathUtils;
 /*
  * "WorldObject changes everything.  It just works." -Steve Jobs, 2014
  */
-public abstract class WorldObject<T extends WorldObject<T>> {
+public abstract class WorldObject {
 	private Vector3 position;
 	private Vector3 orientation;
 	private Vector3 scaled;
@@ -18,8 +18,6 @@ public abstract class WorldObject<T extends WorldObject<T>> {
 	private Matrix4 trs;
 	
 	private boolean modified;
-	
-	protected abstract T getThis();
 	
 	public WorldObject() {
 		position = new Vector3();
@@ -81,28 +79,25 @@ public abstract class WorldObject<T extends WorldObject<T>> {
 		scale(toScale.x, toScale.y, toScale.z);
 	}
 	
-    public T translate(float x, float y, float z) {
+    public void translate(float x, float y, float z) {
         modified = true;
         Vector3 translation = new Vector3(x, y, z);
         t.translate(translation);
         position.add(translation);
-        return getThis();
     }
 
-    public T rotate(float x, float y, float z) {
+    public void rotate(float x, float y, float z) {
         modified = true;
         r.rotateRad(new Vector3(0, 0, 1), z);
         r.rotateRad(new Vector3(0, 1, 0), y);
         r.rotateRad(new Vector3(1, 0, 0), x);
         orientation.add(new Vector3(x, y, z));
-        return getThis();
     }
 
-    public T scale(float x, float y, float z) {
+    public void scale(float x, float y, float z) {
         modified = true;
         s.scale(x, y, z);
         scaled.crs(new Vector3(x, y, z));
-        return getThis();
     }
 
 	public Matrix4 getR() {

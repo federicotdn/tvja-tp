@@ -36,7 +36,7 @@ public class FPSController {
 		return right.nor();
 	}
 	
-	public void updatePositionOrientation(WorldObject<?> wo) {
+	public void updatePositionOrientation(WorldObject wo) {
 		Vector3 ori = wo.getOrientation();
 		Vector3 pos = wo.getPosition();
 

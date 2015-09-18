@@ -3,7 +3,7 @@ package com.tvja.render;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 
-public class ModelInstance extends WorldObject<ModelInstance> {
+public class ModelInstance extends WorldObject {
 	
 	private static final Integer DEFAULT_SHININESS = 3;
 	
@@ -33,9 +33,4 @@ public class ModelInstance extends WorldObject<ModelInstance> {
     public Texture getTex() {
         return tex;
     }
-
-	@Override
-	protected ModelInstance getThis() {
-		return this;
-	}
 }

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 /**
  * Created by Hobbit on 9/14/15.
  */
-public abstract class ViewWorldObject<T extends WorldObject<T>> extends WorldObject<T> {
+public abstract class ViewWorldObject extends WorldObject {
     protected Matrix4 projection;
 
     public Matrix4 getViewProjection() {
