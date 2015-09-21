@@ -11,6 +11,7 @@ public class OrthogonalCamera extends ViewWorldObject {
 	private static final float DEFAULT_FARZ = 100.0f;
 
 	public OrthogonalCamera(float nearZ, float farZ, float height, float width) {
+		super(nearZ, farZ);
 		projection = MathUtils.genOrthogonalProjection(nearZ, farZ, height, width);
 	}
 

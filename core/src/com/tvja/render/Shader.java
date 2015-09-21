@@ -73,7 +73,7 @@ public class Shader {
 			setUniformMat4("u_mvp", cam.getViewProjection().mul(model.getTRS()));
 			setUniformMat4("u_light_mvp", light.getViewProjection().mul(model.getTRS()));
 			setUniformMat4("u_model_mat", model.getTRS());
-			setUniformf("u_view_far", 100);
+			setUniformf("u_view_far", light.getFarZ());
 			setUniform4fv("u_light_pos", MathUtils.toVec4f(light.getPosition()));
 			model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
 		}
@@ -96,7 +96,7 @@ public class Shader {
 			setUniform4fv("u_cam_pos", MathUtils.toVec4f(view.getPosition()));
 			setUniformMat4("u_model_mat", model.getTRS());
 			setUniformMat4("u_model_rotation_mat", model.getR());
-			setUniformf("u_view_far", 100);
+			setUniformf("u_view_far", view.getFarZ());
 
 			setUniformi("u_texture", 0); // Must match with glActiveTexture call
 			setUniformi("u_shininess", model.getShininess());

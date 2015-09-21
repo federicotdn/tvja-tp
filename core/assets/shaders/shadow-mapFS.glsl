@@ -16,8 +16,8 @@ void main()
 
 	vec3 depth = (v_shadow_coord.xyz / v_shadow_coord.w)*0.5+0.5;
 
-	if (texture2D(u_shadow_map, depth.xy).z > f_distance - 0.005) {
-		gl_FragColor = vec4(0.2, 0.2, 0.2, 1);
+	if (texture2D(u_shadow_map, depth.xy).z < f_distance - 0.005) {
+		gl_FragColor = vec4(0, 0, 0, 0.5);
 	} else {
 		gl_FragColor = vec4(0, 0, 0, 1);
 	}

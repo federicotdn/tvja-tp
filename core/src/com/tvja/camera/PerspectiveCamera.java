@@ -10,6 +10,7 @@ public class PerspectiveCamera extends ViewWorldObject {
 	private static final float DEFAULT_FARZ = 100.0f;
 
 	public PerspectiveCamera(float nearZ, float farZ, float fovX, float fovY) {
+		super(nearZ, farZ);
 		projection = MathUtils.genPerspectiveProjection(nearZ, farZ, fovX, fovY);
 	}
 

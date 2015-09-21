@@ -1,5 +1,8 @@
 package com.tvja.main;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
@@ -17,6 +20,8 @@ public class TestGame extends TPGameBase {
 	
 	private Vector3 ambientLight;
 	
+	private List<ModelInstance> ships = new LinkedList<>();
+	
 	@Override
 	protected void init() {
 		// Initialize assets
@@ -31,14 +36,17 @@ public class TestGame extends TPGameBase {
 		ModelInstance mi = new ModelInstance(shipMesh, img);
 		mi.translate(2, 0, 0);
 		models.add(mi);
+		ships.add(mi);
 
 		mi = new ModelInstance(shipMesh, img);
 		mi.translate(4, 0, 0);
 		models.add(mi);
+		ships.add(mi);
 		
 		mi = new ModelInstance(shipMesh, img);
 		mi.translate(6, 0, 0);
 		models.add(mi);
+		ships.add(mi);
 
 		mi = new ModelInstance(cubeMesh, img2);
 		mi.translate(-1000, -1, -1000);
@@ -59,7 +67,11 @@ public class TestGame extends TPGameBase {
 		updateAngle();
 		
 		Light spot = spotLights.get(0);
-		spot.setPosition(new Vector3((float)Math.cos(angle)*3 + 3, 2f, 0));
+		spot.setPosition(new Vector3((float)Math.cos(angle)*3 + 3, 3f, 0));
+		
+		for (ModelInstance ship : ships) {
+			ship.rotate(0, 0, 0.01f);
+		}
 		
 //		Light directional = directionalLights.get(0);
 //		directional.setOrientation(new Vector3(0, 0, angle));

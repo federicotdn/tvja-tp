@@ -21,8 +21,11 @@ public class Light extends ViewWorldObject {
     	return new Light(position, orientation, color, angle);
     }
     
+	static float nearZ = 0.01f;
+	static float farZ = 100; 
     public Light(Vector3 position, Vector3 orientation, Vector3 color, Float angle) {
-    	super(position, orientation);
+    	super(nearZ, farZ, position, orientation);
+    	
         this.color = color;
         
         if (angle != null) {
@@ -33,7 +36,7 @@ public class Light extends ViewWorldObject {
         }
         
         // change so that appropiate projection is created
-        projection = MathUtils.genPerspectiveProjection(0.01f, 100, 60, 60);
+        projection = MathUtils.genPerspectiveProjection(nearZ, farZ, 60, 60);
     }
 
     public Vector3 getColor() {
