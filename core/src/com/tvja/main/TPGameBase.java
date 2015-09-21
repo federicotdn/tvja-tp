@@ -29,7 +29,7 @@ public abstract class TPGameBase extends ApplicationAdapter {
 	private static final Vector3 COLOR_BLACK = new Vector3(0, 0, 0);
 
     private FPSController controller = new FPSController();
-    protected ViewWorldObject cam = new OrthogonalCamera(0.001f, 100.0f, 2, 2);
+    protected ViewWorldObject cam = new PerspectiveCamera(0.001f, 100.0f, 60, 60);
 
     private Shader directionalShader;
     private Shader pointShader;
@@ -37,7 +37,8 @@ public abstract class TPGameBase extends ApplicationAdapter {
     private Shader singleColorShader;
     private Shader shadowMapShader;
     private Shader fullscreenShader;
-    private Texture img;
+    private Shader depthShader;
+
     private ModelInstance fsQuad;
 
     final protected List<ModelInstance> models = new ArrayList<>();
@@ -61,10 +62,10 @@ public abstract class TPGameBase extends ApplicationAdapter {
         spotShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-spotFS.glsl");
         singleColorShader = new Shader("shaders/defaultVS.glsl", "shaders/single-colorFS.glsl");
         shadowMapShader = new Shader("shaders/shadow-mapVS.glsl", "shaders/shadow-mapFS.glsl");
-        fullscreenShader = new Shader("shaders/defaultVS.glsl", "shaders/fullscreenFS.glsl");
+        fullscreenShader = new Shader("shaders/fullscreenVS.glsl", "shaders/fullscreenFS.glsl");
+        depthShader = new Shader("shaders/defaultVS.glsl", "shaders/depthFS.glsl");
         
         fsQuad = new ModelInstance(AssetUtils.loadFullScreenQuad(), null);
-        img  = AssetUtils.textureFromFile("models/ship.png");
         
         init();
         setupShadowMaps();
@@ -80,11 +81,11 @@ public abstract class TPGameBase extends ApplicationAdapter {
         Gdx.graphics.setDisplayMode(1024, 1024, false);
         Gdx.input.setCursorCatched(true);
 
-       // Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
-        //Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
+        Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
+        Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
         
-        //Gdx.gl20.glEnable(GL20.GL_BLEND);
-        //Gdx.gl20.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE);    
+        Gdx.gl20.glEnable(GL20.GL_BLEND);
+        Gdx.gl20.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE);    
     }
 
     @Override
@@ -98,24 +99,32 @@ public abstract class TPGameBase extends ApplicationAdapter {
         controller.updatePositionOrientation(cam);
         updateCameraType();
 
-        //singleColorShader.render(cam, models, COLOR_BLACK);
-        //singleColorShader.render(cam, models, getAmbientLight());
-        //spotShader.render(cam, models, spotLights);
-        //pointShader.render(cam, models, pointLights);
-        //directionalShader.render(cam, models, directionalLights);
+        singleColorShader.render(cam, models, COLOR_BLACK);
+        singleColorShader.render(cam, models, getAmbientLight());
+        spotShader.render(cam, models, spotLights);
+        pointShader.render(cam, models, pointLights);
+        directionalShader.render(cam, models, directionalLights);
 
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT); //remove
+        
         //for (Light light : spotLights) {
         	Light light = spotLights.get(0);
         	FrameBuffer fb = shadowMaps.get(light);
         	fb.begin();
+        	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         	singleColorShader.render(light, models, COLOR_BLACK);
+        	depthShader.render(light, models, (Vector3)null);
         	fb.end();
 
         	int shadowTexture = fb.getDepthBufferHandle();
+        	Texture tt = fb.getColorBufferTexture();
+
         	Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
         	//Gdx.gl20.glBindTexture(Gdx.gl20.GL_TEXTURE_2D, shadowTexture);
-        	img.bind();
-        	fullscreenShader.renderFullscreen(cam, fsQuad);
+
+        	tt.bind();
+        	//fullscreenShader.renderFullscreen(fsQuad, 3);
+        	//shadowMapShader.renderShadow(light, cam, models);
         //}
     }
 

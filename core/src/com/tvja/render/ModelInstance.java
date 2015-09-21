@@ -29,7 +29,7 @@ public class ModelInstance extends WorldObject {
     public Mesh getMesh() {
         return mesh;
     }
-
+    
     public Texture getTex() {
         return tex;
     }

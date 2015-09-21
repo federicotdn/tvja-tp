@@ -25,14 +25,14 @@ public class AssetUtils {
 	public static Mesh loadFullScreenQuad() {
 		Mesh mesh = new Mesh(true, 4, 6, VertexAttribute.Position(), VertexAttribute.TexCoords(0));
 		float vertexData[] = {
-				1.0f, 1.0f, 0.0f, 1.0f, 1.0f, // vertex 0
-				-1.0f, 1.0f, 0.0f, 0.0f, 1.0f, // vertex 1
+				1.0f,  1.0f, 0.0f, 1.0f, 1.0f, // vertex 0
+			   -1.0f,  1.0f, 0.0f, 0.0f, 1.0f, // vertex 1
 				1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // vertex 2
-				-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // vertex 3
+			   -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // vertex 3
 		};
 
 		mesh.setVertices(vertexData);
-		mesh.setIndices(new short[] {1, 2, 3, 2, 3, 4});
+		mesh.setIndices(new short[] {0, 1, 2, 2, 1, 3});
 		
 		return mesh;
 	}

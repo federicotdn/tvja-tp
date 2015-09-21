@@ -53,10 +53,11 @@ public class Shader {
 		render(view, models, lights, null);
 	}
 	
-	public void renderFullscreen(ViewWorldObject view, ModelInstance quad) {
-		setUniformi("u_texture", 2);
-		setUniformMat4("u_mvp", new Matrix4());
+	public void renderFullscreen(ModelInstance quad, int texture) {
+		shaderProgram.begin();
+		setUniformi("u_texture", texture);
 		quad.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
+		shaderProgram.end();
 	}
 	
 	public void renderShadow(Light light, ViewWorldObject cam, List<ModelInstance> models) {
@@ -66,7 +67,7 @@ public class Shader {
 		
 		shaderProgram.begin();
 		
-		setUniformi("u_shadow_map", 1);
+		setUniformi("u_shadow_map", 2);
 		
 		for (ModelInstance model : models) {
 			setUniformMat4("u_mvp", cam.getViewProjection().mul(model.getTRS()));
