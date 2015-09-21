@@ -60,18 +60,21 @@ public class Shader {
 		shaderProgram.end();
 	}
 	
-	public void renderShadow(Light light, ViewWorldObject cam, List<ModelInstance> models) {
+	public void renderShadow(Light light, ViewWorldObject cam, List<ModelInstance> models, int texture) {
 		if (light == null || cam == null || models == null || models.isEmpty()) {
 			return;
 		}
 		
 		shaderProgram.begin();
 		
-		setUniformi("u_shadow_map", 2);
+		setUniformi("u_shadow_map", texture);
 		
 		for (ModelInstance model : models) {
 			setUniformMat4("u_mvp", cam.getViewProjection().mul(model.getTRS()));
 			setUniformMat4("u_light_mvp", light.getViewProjection().mul(model.getTRS()));
+			setUniformMat4("u_model_mat", model.getTRS());
+			setUniformf("u_view_far", 100);
+			setUniform4fv("u_light_pos", MathUtils.toVec4f(light.getPosition()));
 			model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
 		}
 		
@@ -93,6 +96,7 @@ public class Shader {
 			setUniform4fv("u_cam_pos", MathUtils.toVec4f(view.getPosition()));
 			setUniformMat4("u_model_mat", model.getTRS());
 			setUniformMat4("u_model_rotation_mat", model.getR());
+			setUniformf("u_view_far", 100);
 
 			setUniformi("u_texture", 0); // Must match with glActiveTexture call
 			setUniformi("u_shininess", model.getShininess());
@@ -134,5 +138,11 @@ public class Shader {
 		if (shaderProgram.hasUniform(name)) {
 			shaderProgram.setUniformMatrix(name, val);
 		}		
+	}
+	
+	void setUniformf(String name, float val) {
+		if (shaderProgram.hasUniform(name)) {
+			shaderProgram.setUniformf(name, val);
+		}
 	}
 }

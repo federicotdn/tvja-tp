@@ -59,14 +59,14 @@ public class TestGame extends TPGameBase {
 		updateAngle();
 		
 		Light spot = spotLights.get(0);
-		spot.setPosition(new Vector3((float)Math.cos(angle)*3 + 3, 5, 0));
+		spot.setPosition(new Vector3((float)Math.cos(angle)*3 + 3, 2f, 0));
 		
 //		Light directional = directionalLights.get(0);
 //		directional.setOrientation(new Vector3(0, 0, angle));
 	}
 
 	private void updateAngle() {
-		angle += 0.05f;
+		angle += 0.01f;
 		while (angle < 0)
 			angle += Math.PI * 2;
 		while (angle > Math.PI * 2)

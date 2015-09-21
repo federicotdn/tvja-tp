@@ -105,8 +105,6 @@ public abstract class TPGameBase extends ApplicationAdapter {
         pointShader.render(cam, models, pointLights);
         directionalShader.render(cam, models, directionalLights);
 
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT); //remove
-        
         //for (Light light : spotLights) {
         	Light light = spotLights.get(0);
         	FrameBuffer fb = shadowMaps.get(light);
@@ -116,15 +114,12 @@ public abstract class TPGameBase extends ApplicationAdapter {
         	depthShader.render(light, models, (Vector3)null);
         	fb.end();
 
-        	int shadowTexture = fb.getDepthBufferHandle();
         	Texture tt = fb.getColorBufferTexture();
 
         	Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
-        	//Gdx.gl20.glBindTexture(Gdx.gl20.GL_TEXTURE_2D, shadowTexture);
-
         	tt.bind();
-        	//fullscreenShader.renderFullscreen(fsQuad, 3);
-        	//shadowMapShader.renderShadow(light, cam, models);
+        	//fullscreenShader.renderFullscreen(fsQuad, 2);
+        	shadowMapShader.renderShadow(light, cam, models, 2);
         //}
     }
 
