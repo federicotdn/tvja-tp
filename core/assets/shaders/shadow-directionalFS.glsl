@@ -30,14 +30,12 @@ void main()
 	/* SPECULAR */
 	vec4 specular_component = get_specular_component(normal_w, u_light_direction, tex_color, u_light_color, u_shininess, u_model_mat * v_position, u_cam_pos);
 
-	float aux = (v_shadow_coord.z/v_shadow_coord.w + 1)/2.0;
 	float visibility = 1;
-
-	float bias = 0.05;
-	if (unpack(texture2D( u_shadow_map, ((v_shadow_coord.xy + 1)/2) ))  <  (aux - bias)) {
+	float bias = 0.0;
+	if (unpack(texture2D( u_shadow_map, v_shadow_coord.xy ))  <  (v_shadow_coord.z - bias)) {
 		visibility = 0.5;
 	 }
-	gl_FragColor = vec4(diffuse_component.xyz * visibility + specular_component.xyz *visibility, 1);
+	gl_FragColor = vec4(diffuse_component.xyz * visibility + specular_component.xyz * visibility, 1);
 
 
 }

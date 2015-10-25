@@ -91,7 +91,7 @@ public abstract class TPGameBase extends ApplicationAdapter {
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-        Gdx.gl20.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE);
+        Gdx.gl20.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         controller.updatePositionOrientation(cam);
         updateCameraType();

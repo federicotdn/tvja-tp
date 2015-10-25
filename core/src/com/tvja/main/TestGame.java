@@ -34,17 +34,17 @@ public class TestGame extends TPGameBase {
 		models.add(new ModelInstance(shipMesh, img));
 
 		ModelInstance mi = new ModelInstance(shipMesh, img);
-		mi.translate(2, 0.1f, 0);
+		mi.translate(2, 0.2f, 0);
 		models.add(mi);
 		ships.add(mi);
 
 		mi = new ModelInstance(shipMesh, img);
-		mi.translate(4, 0.2f, 0);
+		mi.translate(4, 0.5f, 0);
 		models.add(mi);
 		ships.add(mi);
 		
 		mi = new ModelInstance(shipMesh, img);
-		mi.translate(6, 0.3f, 0);
+		mi.translate(6, 1f, 0);
 		models.add(mi);
 		ships.add(mi);
 

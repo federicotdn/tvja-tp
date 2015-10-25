@@ -38,7 +38,8 @@ void main()
 //		float bias = 0.005*tan(acos(dot(normal_w, u_light_direction)));
 //        bias = clamp(bias, 0,0.01);
 	} else {
-		float bias = 0.00005;
+		float bias = 0.0005 * tan(acos(clamp(dot(normal_w, u_light_direction), 0, 1)));
+		bias = clamp (bias, 0, 0.0005);
         float visibility = 1.0;
 
 
