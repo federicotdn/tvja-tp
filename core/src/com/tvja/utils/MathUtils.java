@@ -5,9 +5,13 @@ import com.badlogic.gdx.math.Vector3;
 
 public class MathUtils {
 
-    public static float[] toVec4f(Vector3 v) {
+    public static float[] toVec4fPoint(Vector3 v) {
         return new float[] {v.x, v.y, v.z, 1};
     }
+
+	public static float[] toVec4fDirection(Vector3 v) {
+		return new float[] {v.x, v.y, v.z, 0};
+	}
     
     public static Vector3 toDirection(Vector3 orientation) {
     	Vector3 dir = new Vector3(0, 0, 1);

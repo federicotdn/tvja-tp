@@ -1,14 +1,14 @@
 package com.tvja.main;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 import com.tvja.render.Light;
 import com.tvja.render.ModelInstance;
 import com.tvja.utils.AssetUtils;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class TestGame extends TPGameBase {
 
@@ -55,7 +55,7 @@ public class TestGame extends TPGameBase {
 		models.add(mi);
 		
 		directionalLights.add(Light.newDirectional(new Vector3(0, 1, 1), new Vector3(1, 1, 1)));
-		//pointLights.add(Light.newPoint(new Vector3(1, 4, 1), new Vector3(0.2f, 0.2f, 0.2f)));
+		pointLights.add(Light.newPoint(new Vector3(1, 20, 1), new Vector3(1f, 1f, 1f)));
 		spotLights.add(Light.newSpot(new Vector3(0, 5, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(0.5f, 0.5f, 0.5f),
 				(float) Math.PI / 10));
 		

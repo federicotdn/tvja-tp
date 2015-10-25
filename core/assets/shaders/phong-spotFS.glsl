@@ -6,7 +6,6 @@ uniform float u_cutoff_angle;
 uniform int u_shininess;
 
 uniform vec4 u_light_color;
-uniform vec4 u_ambient_color;
 
 uniform sampler2D u_texture;
 uniform vec4 u_cam_pos;

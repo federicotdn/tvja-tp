@@ -4,19 +4,13 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.tvja.camera.FPSController;
 import com.tvja.camera.OrthogonalCamera;
 import com.tvja.camera.PerspectiveCamera;
-import com.tvja.render.Light;
-import com.tvja.render.ModelInstance;
-import com.tvja.render.Shader;
-import com.tvja.render.ViewWorldObject;
+import com.tvja.render.*;
 import com.tvja.utils.AssetUtils;
 
 import java.util.ArrayList;
@@ -34,7 +28,9 @@ public abstract class TPGameBase extends ApplicationAdapter {
     private Shader directionalShader;
     private Shader pointShader;
     private Shader spotShader;
-    private Shader singleColorShader;
+    private Shader ambientShader;
+    private Shader earlyZShader;
+
     private Shader shadowMapShader;
     private Shader fullscreenShader;
     private Shader depthShader;
@@ -57,18 +53,21 @@ public abstract class TPGameBase extends ApplicationAdapter {
     public void create() {
         setupGdx();
 
-        directionalShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-directionalFS.glsl");
-        pointShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-pointFS.glsl");
-        spotShader = new Shader("shaders/defaultVS.glsl", "shaders/phong-spotFS.glsl");
-        singleColorShader = new Shader("shaders/defaultVS.glsl", "shaders/single-colorFS.glsl");
-        shadowMapShader = new Shader("shaders/shadow-mapVS.glsl", "shaders/shadow-mapFS.glsl");
-        fullscreenShader = new Shader("shaders/fullscreenVS.glsl", "shaders/fullscreenFS.glsl");
-        depthShader = new Shader("shaders/defaultVS.glsl", "shaders/depthFS.glsl");
+        directionalShader = new DirectionalShader();
+        pointShader = new PointShader();
+        spotShader = new SpotShader();
+
+//        shadowMapShader = new Shader("shaders/shadow-mapVS.glsl", "shaders/shadow-mapFS.glsl");
+//        fullscreenShader = new Shader("shaders/fullscreenVS.glsl", "shaders/fullscreenFS.glsl");
+//        depthShader = new Shader("shaders/defaultVS.glsl", "shaders/depthFS.glsl");
         
         fsQuad = new ModelInstance(AssetUtils.loadFullScreenQuad(), null);
         
         init();
         setupShadowMaps();
+
+        ambientShader = new SingleColorShader(getAmbientLight());
+        earlyZShader = new SingleColorShader(COLOR_BLACK);
     }
     
     private void setupShadowMaps() {
@@ -100,29 +99,30 @@ public abstract class TPGameBase extends ApplicationAdapter {
         controller.updatePositionOrientation(cam);
         updateCameraType();
 
-        singleColorShader.render(cam, models, COLOR_BLACK);
-        singleColorShader.render(cam, models, getAmbientLight());
-        spotShader.render(cam, models, spotLights);
+        earlyZShader.render(cam, models);
+        ambientShader.render(cam, models);
+
+//        spotShader.render(cam, models, spotLights);
         pointShader.render(cam, models, pointLights);
-        directionalShader.render(cam, models, directionalLights);
+//        directionalShader.render(cam, models, directionalLights);
 
-        //for (Light light : spotLights) {
-        	Light light = spotLights.get(0);
-        	FrameBuffer fb = shadowMaps.get(light);
-        	fb.begin();
-        	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-        	singleColorShader.render(light, models, COLOR_BLACK);
-        	depthShader.render(light, models, (Vector3)null);
-        	fb.end();
-
-        	Texture tt = fb.getColorBufferTexture();
-
-        	Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
-        	tt.bind();
-        	//fullscreenShader.renderFullscreen(fsQuad, 2);
-        	Gdx.gl20.glBlendFunc(GL20.GL_ONE, GL20.GL_SRC_ALPHA);   
-        	shadowMapShader.renderShadow(light, cam, models, 2);
-        //}
+//        //for (Light light : spotLights) {
+//        	Light light = spotLights.get(0);
+//        	FrameBuffer fb = shadowMaps.get(light);
+//        	fb.begin();
+//        	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+////        	singleColorShader.render(light, models, COLOR_BLACK);
+//        	depthShader.render(light, models, (Vector3)null);
+//        	fb.end();
+//
+//        	Texture tt = fb.getColorBufferTexture();
+//
+//        	Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
+//        	tt.bind();
+//        	//fullscreenShader.renderFullscreen(fsQuad, 2);
+//        	Gdx.gl20.glBlendFunc(GL20.GL_ONE, GL20.GL_SRC_ALPHA);
+//        	shadowMapShader.renderShadow(light, cam, models, 2);
+//        //}
     }
 
     private void updateCameraType() {
