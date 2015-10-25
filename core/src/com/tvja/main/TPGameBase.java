@@ -23,7 +23,7 @@ public abstract class TPGameBase extends ApplicationAdapter {
 	private static final Vector3 COLOR_BLACK = new Vector3(0, 0, 0);
 
     private FPSController controller = new FPSController();
-    protected ViewWorldObject cam = new PerspectiveCamera(0.001f, 100.0f, 60, 60);
+    protected ViewWorldObject cam = new PerspectiveCamera();
 
     private Shader directionalShader;
     private Shader pointShader;
