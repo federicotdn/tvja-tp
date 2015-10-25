@@ -13,13 +13,18 @@ public class DirectionalShader extends Shader {
        super(VS, FS);
     }
 
+
+    protected DirectionalShader(String vs, String fs) {
+        super(vs, fs);
+    }
+
     @Override
     protected void setModelUniforms(ViewWorldObject view, ModelInstance model) {
         setCommonModelUniforms(view, model);
     }
 
     @Override
-    protected void setLightUniforms(Light light) {
+    protected void setLightUniforms(Light light, ModelInstance model) {
         setUniform4fv("u_light_direction", MathUtils.toVec4fDirection(light.getDirection()));
     }
 }

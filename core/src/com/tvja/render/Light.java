@@ -10,20 +10,28 @@ public class Light extends ViewWorldObject {
     private Float angle;
 
     public static Light newDirectional(Vector3 orientation, Vector3 color) {
-    	return new Light(new Vector3(), orientation, color, null);
+        Light l =  new Light(new Vector3(), orientation, color, null);
+        Vector3 dir = l.getDirection().nor();
+        l.setPosition(dir.scl(-10));
+        l.projection = MathUtils.genOrthogonalProjection(nearZ, farZ, 5, 5);
+        return l;
     }
     
     public static Light newPoint(Vector3 position, Vector3 color) {
-    	return new Light(position, new Vector3(), color, null);
+        Light l =  new Light(position, new Vector3(), color, null);
+        l.projection = MathUtils.genPerspectiveProjection(nearZ, farZ, 60, 60);
+    	return l;
     }
     
     public static Light newSpot(Vector3 position, Vector3 orientation, Vector3 color, Float angle) {
-    	return new Light(position, orientation, color, angle);
+        Light l = new Light(position, orientation, color, angle);
+        l.projection = MathUtils.genPerspectiveProjection(nearZ, farZ, angle, angle);
+    	return l;
     }
     
 	static float nearZ = 0.01f;
 	static float farZ = 100; 
-    public Light(Vector3 position, Vector3 orientation, Vector3 color, Float angle) {
+    private Light(Vector3 position, Vector3 orientation, Vector3 color, Float angle) {
     	super(nearZ, farZ, position, orientation);
     	
         this.color = color;
@@ -34,9 +42,6 @@ public class Light extends ViewWorldObject {
             }
             this.angle = (float)Math.cos(angle);
         }
-        
-        // change so that appropiate projection is created
-        projection = MathUtils.genPerspectiveProjection(nearZ, farZ, 60, 60);
     }
 
     public Vector3 getColor() {

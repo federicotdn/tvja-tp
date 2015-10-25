@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class TPGameBase extends ApplicationAdapter {
-
-	private static final Vector3 COLOR_BLACK = new Vector3(0, 0, 0);
-
     private FPSController controller = new FPSController();
     protected ViewWorldObject cam = new PerspectiveCamera();
 
@@ -53,11 +50,11 @@ public abstract class TPGameBase extends ApplicationAdapter {
     public void create() {
         setupGdx();
 
-        directionalShader = new DirectionalShader();
+        directionalShader = new DirectionalShadowShader();
         pointShader = new PointShader();
-        spotShader = new SpotShader();
+        spotShader = new SpotShadowShader();
 
-//        shadowMapShader = new Shader("shaders/shadow-mapVS.glsl", "shaders/shadow-mapFS.glsl");
+//        shadowMapShader = new Shader("shaders/default-shadowVS.glsl", "shaders/shadow-mapFS.glsl");
 //        fullscreenShader = new Shader("shaders/fullscreenVS.glsl", "shaders/fullscreenFS.glsl");
 //        depthShader = new Shader("shaders/defaultVS.glsl", "shaders/depthFS.glsl");
         
@@ -67,7 +64,7 @@ public abstract class TPGameBase extends ApplicationAdapter {
         setupShadowMaps();
 
         ambientShader = new SingleColorShader(getAmbientLight());
-        earlyZShader = new SingleColorShader(COLOR_BLACK);
+        earlyZShader = new SingleColorShader();
     }
     
     private void setupShadowMaps() {
@@ -99,11 +96,11 @@ public abstract class TPGameBase extends ApplicationAdapter {
         controller.updatePositionOrientation(cam);
         updateCameraType();
 
-        earlyZShader.render(cam, models);
-        ambientShader.render(cam, models);
+//        earlyZShader.render(cam, models);
+//        ambientShader.render(cam, models);
 
-//        spotShader.render(cam, models, spotLights);
-        pointShader.render(cam, models, pointLights);
+        spotShader.render(cam, models, spotLights);
+//        pointShader.render(cam, models, pointLights);
 //        directionalShader.render(cam, models, directionalLights);
 
 //        //for (Light light : spotLights) {

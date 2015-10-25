@@ -13,16 +13,19 @@ public class SpotShader extends Shader {
         super(VS, FS);
     }
 
+    protected SpotShader(String vs, String fs) {
+        super(vs, fs);
+    }
+
     @Override
     protected void setModelUniforms(ViewWorldObject view, ModelInstance model) {
         setCommonModelUniforms(view, model);
     }
 
     @Override
-    protected void setLightUniforms(Light light) {
+    protected void setLightUniforms(Light light, ModelInstance model) {
         setUniform4fv("u_light_direction", MathUtils.toVec4fDirection(light.getDirection()));
         setUniformf("u_cutoff_angle", light.getAngle().get());
         setUniform4fv("u_light_position", MathUtils.toVec4fPoint(light.getPosition()));
-
     }
 }

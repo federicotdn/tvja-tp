@@ -1,3 +1,6 @@
+const vec4 packFactors = vec4( 256.0 * 256.0 * 256.0,256.0 * 256.0,256.0,1.0);
+const vec4 bitMask     = vec4(0.0,1.0/256.0,1.0/256.0,1.0/256.0);
+
 vec4 get_diffuse_component(vec4 normal, vec4 light_direction, vec4 texture_color, vec4 light_color)
 {
 	vec4 after_light = max(0, (dot(normal, normalize(light_direction)))) * texture_color;
@@ -11,4 +14,20 @@ vec4 get_specular_component(vec4 normal, vec4 light_direction, vec4 texture_colo
 
 	vec4 after_light_spec = max(0, pow(dot(r_vec, v_vec), shininess)) * texture_color;
 	return after_light_spec * light_color;
+}
+
+float unpack(vec4 packedZValue)
+{
+	const vec4 unpackFactors = vec4( 1.0 / (256.0 * 256.0 * 256.0), 1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0 );
+	return dot(packedZValue, unpackFactors);
+}
+
+vec4 pack(vec4 position) {
+    float normalizedDistance  = position.z / position.w;
+    normalizedDistance = (normalizedDistance + 1.0) / 2.0;
+
+    vec4 packedValue = vec4(fract(packFactors*normalizedDistance));
+    packedValue -= packedValue.xxyz * bitMask;
+
+    return packedValue;
 }

@@ -54,10 +54,10 @@ public class TestGame extends TPGameBase {
 		mi.setShininess(4);
 		models.add(mi);
 		
-		directionalLights.add(Light.newDirectional(new Vector3(0, 1, 1), new Vector3(1, 1, 1)));
-		pointLights.add(Light.newPoint(new Vector3(1, 20, 1), new Vector3(1f, 1f, 1f)));
-		spotLights.add(Light.newSpot(new Vector3(0, 5, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(0.5f, 0.5f, 0.5f),
-				(float) Math.PI / 10));
+		directionalLights.add(Light.newDirectional(new Vector3((float)(-Math.PI/4), 0, 0), new Vector3(1, 1, 1)));
+		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(1f, 1f, 1f)));
+		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(1,1,1),
+				(float) Math.PI / 7));
 		
 		ambientLight = new Vector3(0.1f, 0.1f, 0.1f);
 	}
@@ -65,9 +65,9 @@ public class TestGame extends TPGameBase {
 	@Override
 	protected void update() {
 		updateAngle();
-		
+
 		Light spot = spotLights.get(0);
-		spot.setPosition(new Vector3((float)Math.cos(angle)*3 + 3, 3f, 0));
+		spot.setPosition(new Vector3((float)Math.cos(angle)*3 + 3, 1, 0));
 		
 		for (ModelInstance ship : ships) {
 			ship.rotate(0, 0, 0.01f);

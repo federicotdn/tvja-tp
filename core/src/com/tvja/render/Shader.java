@@ -10,8 +10,8 @@ import com.tvja.utils.MathUtils;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Shader {
-    private static final Matrix4 biasMat = new Matrix4(new float[]{
+public class Shader {
+    protected static final Matrix4 biasMat = new Matrix4(new float[]{
             0.5f, 0.0f, 0.0f, 0.0f,
             0.0f, 0.5f, 0.0f, 0.0f,
             0.0f, 0.0f, 0.5f, 0.0f,
@@ -92,15 +92,19 @@ public abstract class Shader {
         setUniformi("u_shininess", model.getShininess());
     }
 
-    protected abstract void setModelUniforms(ViewWorldObject view, ModelInstance model);
+    protected void setModelUniforms(ViewWorldObject view, ModelInstance model) {
+        //Do nothing by default
+    }
 
-    protected abstract void setLightUniforms(Light light);
+    protected void setLightUniforms(Light light, ModelInstance model) {
+        //Do nothing by default
+    }
 
     protected void setShadowUniforms(List<FrameBuffer> shadowMaps) {
         //Do nothing by default
     }
 
-    protected Map<Light, List<FrameBuffer>> setUpShader(ViewWorldObject view, List<ModelInstance> models, List<Light> lights) {
+    protected Map<Light, List<FrameBuffer>> setUpShader(List<ModelInstance> models, List<Light> lights) {
         return null;
     }
 
@@ -109,7 +113,11 @@ public abstract class Shader {
             return;
         }
 
-        Map<Light, List<FrameBuffer>> shadowMaps = setUpShader(view, models, lights);
+        Map<Light, List<FrameBuffer>> shadowMaps = setUpShader(models, lights);
+
+        if (shadowMaps != null) {
+            return;
+        }
 
         shaderProgram.begin();
 
@@ -118,13 +126,12 @@ public abstract class Shader {
             model.getTex().bind();
             setUniformMat4("u_mvp", view.getViewProjection().mul(model.getTRS()));
 
-//            setCommonModelUniforms(view, model);
             setModelUniforms(view, model);
 
             if (lights != null && !lights.isEmpty()) {
                 for (Light light : lights) {
                     setUniform4fv("u_light_color", MathUtils.toVec4fPoint(light.getColor()));
-                    setLightUniforms(light);
+                    setLightUniforms(light, model);
                     setShadowUniforms(shadowMaps != null ? shadowMaps.get(light) : null);
                     model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
                 }
