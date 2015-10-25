@@ -26,13 +26,13 @@ public class SpotShadowShader extends SpotShader {
         super(VS, FS);
         depthShader = new Shader("shaders/defaultVS.glsl", "shaders/depthFS.glsl");
         earlyZShader = new SingleColorShader();
-        frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, 1024, 1024, true);
+        frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, 2048, 2048, true);
     }
 
     @Override
     protected void setLightUniforms(Light light, ModelInstance model) {
         super.setLightUniforms(light, model);
-        setUniformMat4("u_light_bias_mvp", light.getViewProjection().mul(model.getTRS()));
+        setUniformMat4("u_light_bias_mvp", biasMat.cpy().mul(light.getViewProjection().mul(model.getTRS())));
     }
 
     private Shader fullscreenShader = new Shader("shaders/fullscreenVS.glsl", "shaders/fullscreenFS.glsl" );
@@ -48,7 +48,7 @@ public class SpotShadowShader extends SpotShader {
 
         setUniformi("u_shadow_map", 2);
 
-        fullscreenShader.renderFullscreen(fsQuad, 2);
+//        fullscreenShader.renderFullscreen(fsQuad, 2);
     }
 
     @Override
@@ -64,15 +64,15 @@ public class SpotShadowShader extends SpotShader {
         l.add(frameBuffer);
         map.put(lights.get(0), l);
 
-        FrameBuffer fb = frameBuffer;
-        Texture tt = fb.getColorBufferTexture();
-
-        Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
-        tt.bind();
-
-        setUniformi("u_shadow_map", 2);
-
-        fullscreenShader.renderFullscreen(fsQuad, 2);
+//        FrameBuffer fb = frameBuffer;
+//        Texture tt = fb.getColorBufferTexture();
+//
+//        Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
+//        tt.bind();
+//
+//        setUniformi("u_shadow_map", 2);
+//
+//        fullscreenShader.renderFullscreen(fsQuad, 2);
 
         return map;
     }

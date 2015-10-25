@@ -34,17 +34,17 @@ public class TestGame extends TPGameBase {
 		models.add(new ModelInstance(shipMesh, img));
 
 		ModelInstance mi = new ModelInstance(shipMesh, img);
-		mi.translate(2, 0, 0);
+		mi.translate(2, 0.1f, 0);
 		models.add(mi);
 		ships.add(mi);
 
 		mi = new ModelInstance(shipMesh, img);
-		mi.translate(4, 0, 0);
+		mi.translate(4, 0.2f, 0);
 		models.add(mi);
 		ships.add(mi);
 		
 		mi = new ModelInstance(shipMesh, img);
-		mi.translate(6, 0, 0);
+		mi.translate(6, 0.3f, 0);
 		models.add(mi);
 		ships.add(mi);
 
@@ -67,7 +67,7 @@ public class TestGame extends TPGameBase {
 		updateAngle();
 
 		Light spot = spotLights.get(0);
-		spot.setPosition(new Vector3((float)Math.cos(angle)*3 + 3, 1, 0));
+		spot.setPosition(new Vector3((float)Math.cos(angle)*3 + 3, 10, 0));
 		
 		for (ModelInstance ship : ships) {
 			ship.rotate(0, 0, 0.01f);

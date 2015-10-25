@@ -115,9 +115,9 @@ public class Shader {
 
         Map<Light, List<FrameBuffer>> shadowMaps = setUpShader(models, lights);
 
-        if (shadowMaps != null) {
-            return;
-        }
+//        if (shadowMaps != null) {
+//            return;
+//        }
 
         shaderProgram.begin();
 
