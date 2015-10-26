@@ -63,7 +63,7 @@ public class TestGame extends TPGameBase {
 		mi.setShininess(4);
 		models.add(mi);
 		
-		directionalLights.add(Light.newDirectional(new Vector3((float)(-Math.PI/4), 0, 0), new Vector3(0.5f, 0.5f, 0.5f)));
+		directionalLights.add(Light.newDirectional(new Vector3(-0.6199997f, 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
 		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(0.2f, 0.2f, 0.2f)));
 		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(1,1,1),
 				(float) Math.PI / 7));
@@ -82,7 +82,8 @@ public class TestGame extends TPGameBase {
 		
 		if (Gdx.input.isKeyPressed(Keys.V)) {
 			spot.setPosition(cam.getPosition());
-			spot.setOrientation(cam.getOrientation());
+			directionalLights.get(0).setOrientation(cam.getOrientation());
+			System.out.println(cam.getOrientation());
 		}
 		
 		for (ModelInstance ship : ships) {

@@ -29,7 +29,7 @@ public class Light extends ViewWorldObject {
     public static Light newDirectional(Vector3 orientation, Vector3 color) {
         Light l = new Light(new Vector3(), orientation, color, null);
         Vector3 dir = l.getDirection().nor();
-        l.setPosition(dir.scl(-10));
+        l.setPosition(dir.scl(10));
         l.projection = MathUtils.genOrthogonalProjection(nearZ, farZ, 5, 5);
         return l;
     }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.tvja.utils.AssetUtils;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -44,6 +45,9 @@ public class DirectionalShadowShader extends DirectionalShader {
 
         setUniformi("u_shadow_map", 2);
     }
+    
+    private Shader fullscreenShader = new Shader("shaders/fullscreenVS.glsl", "shaders/fullscreenFS.glsl" );
+    private ModelInstance fsQuad = new ModelInstance(AssetUtils.loadFullScreenQuad(), null);
 
     @Override
     protected Map<Light, List<FrameBuffer>> setUpShader(List<ModelInstance> models, List<Light> lights) {
@@ -58,6 +62,16 @@ public class DirectionalShadowShader extends DirectionalShader {
         l.add(frameBuffer);
         map.put(lights.get(0), l);
 
+	    FrameBuffer fb = frameBuffer;
+	    Texture tt = fb.getColorBufferTexture();
+	
+	    Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
+	    tt.bind();
+	
+	    setUniformi("u_shadow_map", 2);
+	
+	    fullscreenShader.renderFullscreen(fsQuad, 2);
+        
         return map;
     }
 }

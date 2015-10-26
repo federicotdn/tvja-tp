@@ -34,9 +34,9 @@ public abstract class TPGameBase extends ApplicationAdapter {
         setupGdx();
         init();
 
-        directionalShader = new DirectionalShader();
+        directionalShader = new DirectionalShadowShader();
         pointShader = new PointShader();
-        spotShader = new SpotShadowShader();
+        spotShader = new SpotShader();
         
         ambientShader = new SingleColorShader(getAmbientLight());
         earlyZShader = new SingleColorShader();
@@ -62,11 +62,11 @@ public abstract class TPGameBase extends ApplicationAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        earlyZShader.render(cam, models);
-        ambientShader.render(cam, models);
+//        earlyZShader.render(cam, models);
+//        ambientShader.render(cam, models);
 
-        spotShader.render(cam, models, spotLights);
-        pointShader.render(cam, models, pointLights);
+        //spotShader.render(cam, models, spotLights);
+        //pointShader.render(cam, models, pointLights);
         directionalShader.render(cam, models, directionalLights);
     }
 

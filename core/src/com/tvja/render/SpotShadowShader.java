@@ -48,8 +48,6 @@ public class SpotShadowShader extends SpotShader {
         tt.bind();
 
         setUniformi("u_shadow_map", 2);
-
-//        fullscreenShader.renderFullscreen(fsQuad, 2);
     }
 
     @Override
@@ -65,15 +63,15 @@ public class SpotShadowShader extends SpotShader {
         l.add(frameBuffer);
         map.put(lights.get(0), l);
 
-//        FrameBuffer fb = frameBuffer;
-//        Texture tt = fb.getColorBufferTexture();
-//
-//        Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
-//        tt.bind();
-//
-//        setUniformi("u_shadow_map", 2);
-//
-//        fullscreenShader.renderFullscreen(fsQuad, 2);
+        FrameBuffer fb = frameBuffer;
+        Texture tt = fb.getColorBufferTexture();
+
+        Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
+        tt.bind();
+
+        setUniformi("u_shadow_map", 2);
+
+        fullscreenShader.renderFullscreen(fsQuad, 2);
 
         return map;
     }
