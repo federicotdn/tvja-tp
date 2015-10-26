@@ -32,7 +32,7 @@ public class DirectionalShadowShader extends DirectionalShader {
     @Override
     protected void setLightUniforms(Light light, ModelInstance model) {
         super.setLightUniforms(light, model);
-        setUniformMat4("u_light_bias_mvp", light.getViewProjection().mul(model.getTRS()));
+        setUniformMat4("u_light_bias_mvp", biasMat.cpy().mul(light.getViewProjection().mul(model.getTRS())));
     }
 
     @Override
@@ -62,15 +62,15 @@ public class DirectionalShadowShader extends DirectionalShader {
         l.add(frameBuffer);
         map.put(lights.get(0), l);
 
-	    FrameBuffer fb = frameBuffer;
-	    Texture tt = fb.getColorBufferTexture();
+//	    FrameBuffer fb = frameBuffer;
+//	    Texture tt = fb.getColorBufferTexture();
+//
+//	    Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
+//	    tt.bind();
+//
+//	    setUniformi("u_shadow_map", 2);
 	
-	    Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
-	    tt.bind();
-	
-	    setUniformi("u_shadow_map", 2);
-	
-	    fullscreenShader.renderFullscreen(fsQuad, 2);
+//	    fullscreenShader.renderFullscreen(fsQuad, 2);
         
         return map;
     }

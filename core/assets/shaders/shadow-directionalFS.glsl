@@ -36,7 +36,7 @@ void main()
 
 	for (int i=0; i < 9; i++)
 	{
-    	if (unpack(texture2D(u_shadow_map, ((v_shadow_coord.xy/v_shadow_coord.w + poissonDisk[i]/700.0)))) < (v_shadow_coord.z - bias)/v_shadow_coord.w)
+    	if (unpack(texture2D(u_shadow_map, ((v_shadow_coord.xy + poissonDisk[i]/700.0)))) < (v_shadow_coord.z - bias))
     	{
     		visibility -= 0.1;
 		}
