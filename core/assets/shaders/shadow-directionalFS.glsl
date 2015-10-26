@@ -32,10 +32,11 @@ void main()
 
 	float visibility = 1;
 	float bias = 0.0;
-	if (unpack(texture2D( u_shadow_map, v_shadow_coord.xy ))  <  (v_shadow_coord.z - bias)) {
+
+	if (unpack(texture2D( u_shadow_map, v_shadow_coord.xy ))  <  (v_shadow_coord.z - bias))
+	{
 		visibility = 0.5;
-	 }
+	}
+
 	gl_FragColor = vec4(diffuse_component.xyz * visibility + specular_component.xyz * visibility, 1);
-
-
 }

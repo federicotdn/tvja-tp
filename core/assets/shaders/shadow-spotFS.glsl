@@ -21,7 +21,6 @@ varying vec2 v_texCoords;
 
 varying vec4 v_shadow_coord;
 
-
 //%include shaders/utils.glsl
 
 void main()
@@ -33,28 +32,27 @@ void main()
 	vec4 light_direction_surface = normalize(u_light_position - position_w);
 
 	float cutoff_multiplier = 1.0;
-	if ((dot(light_direction_surface, u_light_direction)) < u_cutoff_angle) {
+
+	if ((dot(light_direction_surface, u_light_direction)) < u_cutoff_angle)
+	{
 		cutoff_multiplier = 0.0001;
-//		float bias = 0.005*tan(acos(dot(normal_w, u_light_direction)));
-//        bias = clamp(bias, 0,0.01);
-	} else {
+	} 
+	else 
+	{
+		//float bias = 0.005*tan(acos(dot(normal_w, u_light_direction)));
+		//bias = clamp(bias, 0,0.01);
 		float bias = 0.0005 * tan(acos(clamp(dot(normal_w, u_light_direction), 0, 1)));
 		bias = clamp (bias, 0, 0.0005);
         float visibility = 1.0;
 
+		for (int i=0; i < 9; i++)
+		{
+        	if (unpack(texture2D( u_shadow_map, ((v_shadow_coord.xy/v_shadow_coord.w + poissonDisk[i]/700.0)) ))  <  (v_shadow_coord.z - bias)/v_shadow_coord.w)
+        	{
+        		visibility -= 0.1;
+			}
+        }
 
-        vec2 poissonDisk[9] = vec2[](
-         vec2(0.95581, -0.18159), vec2(0.50147, -0.35807), vec2(0.69607, 0.35559),
-           vec2(-0.0036825, -0.59150),	vec2(0.15930, 0.089750), vec2(-0.65031, 0.058189),
-           vec2(0.11915, 0.78449),	vec2(-0.34296, 0.51575), vec2(-0.60380, -0.41527)
-        );
-
-		for (int i=0;i<9;i++){
-//		float aux = (v_shadow_coord.z/v_shadow_coord.w + 1)/2.0;
-        if (unpack(texture2D( u_shadow_map, ((v_shadow_coord.xy/v_shadow_coord.w + poissonDisk[i]/700.0)) ))  <  (v_shadow_coord.z - bias)/v_shadow_coord.w) {
-        	visibility -= 0.1;
-         }
-         }
       	cutoff_multiplier *= visibility;
 	}
 

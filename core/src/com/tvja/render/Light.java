@@ -24,6 +24,8 @@ public class Light extends ViewWorldObject {
         }
     }
 
+    //TODO: Change projection matrix parameters for all 3 constructors
+    
     public static Light newDirectional(Vector3 orientation, Vector3 color) {
         Light l = new Light(new Vector3(), orientation, color, null);
         Vector3 dir = l.getDirection().nor();

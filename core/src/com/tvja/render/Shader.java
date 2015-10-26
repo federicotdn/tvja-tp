@@ -63,27 +63,6 @@ public class Shader {
         shaderProgram.end();
     }
 
-//    public void renderShadow(Light light, ViewWorldObject cam, List<ModelInstance> models, int texture) {
-//        if (light == null || cam == null || models == null || models.isEmpty()) {
-//            return;
-//        }
-//
-//        shaderProgram.begin();
-//
-//        setUniformi("u_shadow_map", texture);
-//
-//        for (ModelInstance model : models) {
-//            setUniformMat4("u_mvp", cam.getViewProjection().mul(model.getTRS()));
-//            setUniformMat4("u_light_bias_mvp", biasMat.cpy().tra().mul(light.getViewProjection().mul(model.getTRS())));
-//            setUniformMat4("u_model_mat", model.getTRS());
-//            setUniformf("u_view_far", light.getFarZ());
-//            setUniform4fv("u_light_pos", MathUtils.toVec4fPoint(light.getPosition()));
-//            model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
-//        }
-//
-//        shaderProgram.end();
-//    }
-
     protected void setCommonModelUniforms(ViewWorldObject view, ModelInstance model) {
         setUniform4fv("u_cam_pos", MathUtils.toVec4fPoint(view.getPosition()));
         setUniformMat4("u_model_mat", model.getTRS());

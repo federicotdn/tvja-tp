@@ -1,8 +1,13 @@
 package com.tvja.main;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
+import com.tvja.camera.FPSController;
+import com.tvja.camera.OrthogonalCamera;
+import com.tvja.camera.PerspectiveCamera;
 import com.tvja.render.Light;
 import com.tvja.render.ModelInstance;
 import com.tvja.utils.AssetUtils;
@@ -15,6 +20,7 @@ public class TestGame extends TPGameBase {
 	private Texture img, img2;
 	private Mesh shipMesh;
 	private Mesh cubeMesh;
+    private FPSController controller = new FPSController();
 
 	private float angle = 0;
 	
@@ -24,6 +30,8 @@ public class TestGame extends TPGameBase {
 	
 	@Override
 	protected void init() {
+		cam = new PerspectiveCamera();
+		
 		// Initialize assets
 		img = AssetUtils.textureFromFile("models/ship.png");
 		img2 = AssetUtils.textureFromFile("models/plain.jpg");
@@ -40,6 +48,7 @@ public class TestGame extends TPGameBase {
 
 		mi = new ModelInstance(shipMesh, img);
 		mi.translate(4, 0.5f, 0);
+		mi.setShininess(4);
 		models.add(mi);
 		ships.add(mi);
 		
@@ -54,28 +63,48 @@ public class TestGame extends TPGameBase {
 		mi.setShininess(4);
 		models.add(mi);
 		
-		directionalLights.add(Light.newDirectional(new Vector3((float)(-Math.PI/4), 0, 0), new Vector3(1, 1, 1)));
-		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(1f, 1f, 1f)));
+		directionalLights.add(Light.newDirectional(new Vector3((float)(-Math.PI/4), 0, 0), new Vector3(0.5f, 0.5f, 0.5f)));
+		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(0.2f, 0.2f, 0.2f)));
 		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(1,1,1),
 				(float) Math.PI / 7));
 		
-		ambientLight = new Vector3(0.1f, 0.1f, 0.1f);
+		ambientLight = new Vector3(0.05f, 0.05f, 0.05f);
 	}
 
 	@Override
 	protected void update() {
+        controller.updatePositionOrientation(cam);
+        updateCameraType();
+		
 		updateAngle();
 
 		Light spot = spotLights.get(0);
-		spot.setPosition(new Vector3((float)Math.cos(angle)*3 + 3, 10, 0));
+		
+		if (Gdx.input.isKeyPressed(Keys.V)) {
+			spot.setPosition(cam.getPosition());
+			spot.setOrientation(cam.getOrientation());
+		}
 		
 		for (ModelInstance ship : ships) {
 			ship.rotate(0, 0, 0.01f);
 		}
-		
-//		Light directional = directionalLights.get(0);
-//		directional.setOrientation(new Vector3(0, 0, angle));
 	}
+
+    private void updateCameraType() {
+        if (Gdx.input.isKeyPressed(Keys.X)) {
+            Vector3 pos = cam.getPosition();
+            Vector3 ori = cam.getOrientation();
+            cam = new PerspectiveCamera();
+            cam.setOrientation(ori);
+            cam.setPosition(pos);
+        } else if (Gdx.input.isKeyPressed(Keys.C)) {
+            Vector3 pos = cam.getPosition();
+            Vector3 ori = cam.getOrientation();
+            cam = new OrthogonalCamera();
+            cam.setOrientation(ori);
+            cam.setPosition(pos);
+        }
+    }	
 
 	private void updateAngle() {
 		angle += 0.01f;

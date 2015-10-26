@@ -22,5 +22,4 @@ public class PointShader extends Shader {
     protected void setLightUniforms(Light light, ModelInstance model) {
         setUniform4fv("u_light_position", MathUtils.toVec4fPoint(light.getPosition()));
     }
-
 }

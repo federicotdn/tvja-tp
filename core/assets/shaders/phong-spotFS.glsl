@@ -28,7 +28,8 @@ void main()
 	vec4 light_direction_surface = normalize(u_light_position - position_w);
 
 	float cutoff_multiplier = 1.0;
-	if ((dot(light_direction_surface, u_light_direction)) < u_cutoff_angle) {
+	if ((dot(light_direction_surface, u_light_direction)) < u_cutoff_angle)
+	{
 		cutoff_multiplier = 0.0001;
 	}
 	

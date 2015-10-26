@@ -9,8 +9,5 @@ varying vec2 v_texCoords;
 void main()
 {
     float z = unpack(texture2D(u_texture, v_texCoords));
-    if (z > 1) {
-
-    }
-    gl_FragColor = vec4(z,z,z,1);
+    gl_FragColor = vec4(z, z, z, 1);
 }
