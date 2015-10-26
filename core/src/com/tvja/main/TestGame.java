@@ -82,8 +82,7 @@ public class TestGame extends TPGameBase {
 		
 		if (Gdx.input.isKeyPressed(Keys.V)) {
 			spot.setPosition(cam.getPosition());
-			directionalLights.get(0).setOrientation(cam.getOrientation());
-			System.out.println(cam.getOrientation());
+			spot.setOrientation(cam.getOrientation());
 		}
 		
 		for (ModelInstance ship : ships) {
