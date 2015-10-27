@@ -18,7 +18,16 @@ public class MathUtils {
     	dir.rotateRad(new Vector3(1, 0, 0), orientation.x);
     	dir.rotateRad(new Vector3(0, 1, 0), orientation.y);
     	dir.rotateRad(new Vector3(0, 0, 1), orientation.z);
-    	return dir;
+    	return dir.nor();
+    }
+    
+    public static Vector3 toOrientation(Vector3 direction) {
+    	Vector3 dir = direction.cpy().nor();
+    	Vector3 ori = new Vector3();
+    	ori.x = (float)Math.acos(dir.dot(new Vector3(1, 0, 0)));
+    	ori.y = (float)Math.acos(dir.dot(new Vector3(0, 1, 0)));
+    	ori.z = (float)Math.acos(dir.dot(new Vector3(0, 0, 1)));
+    	return ori;
     }
     
 	public static Matrix4 genPerspectiveProjection(float nearZ, float farZ, float fovX, float fovY) {
