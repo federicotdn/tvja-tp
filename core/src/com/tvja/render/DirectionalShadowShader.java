@@ -26,7 +26,7 @@ public class DirectionalShadowShader extends DirectionalShader {
         super(VS, FS);
         depthShader = new Shader("shaders/defaultVS.glsl", "shaders/depthFS.glsl");
         earlyZShader = new SingleColorShader();
-        frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, 1024, 1024, true);
+        frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, 4096, 4096, true);
     }
 
     @Override

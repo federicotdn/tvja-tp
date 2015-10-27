@@ -1,5 +1,6 @@
 package com.tvja.camera;
 
+import com.badlogic.gdx.math.Vector3;
 import com.tvja.render.ViewWorldObject;
 import com.tvja.utils.MathUtils;
 
@@ -16,5 +17,6 @@ public class PerspectiveCamera extends ViewWorldObject {
 
 	public PerspectiveCamera() {
 		this(DEFAULT_NEARZ, DEFAULT_FARZ, DEFAULT_FOVX, DEFAULT_FOVY);
+		this.setOrientation(new Vector3(0, -(float) Math.PI, 0));
 	}
 }

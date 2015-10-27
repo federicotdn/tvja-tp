@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.tvja.render.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class TPGameBase extends ApplicationAdapter {
@@ -68,6 +69,14 @@ public abstract class TPGameBase extends ApplicationAdapter {
         spotShader.render(cam, models, spotLights);
         //pointShader.render(cam, models, pointLights);
         directionalShader.render(cam, models, directionalLights);
+
+        // Hack! Change later
+
+        List<ModelInstance> m = new LinkedList<>();
+        m.add(directionalLights.get(0).model);
+        ((SingleColorShader)ambientShader).setAmbientColor(new Vector3(1,0,0));
+        ambientShader.render(cam, m);
+        ((SingleColorShader)ambientShader).setAmbientColor(getAmbientLight());
     }
 
     private void checkExit() {

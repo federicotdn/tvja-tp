@@ -31,7 +31,7 @@ public class TestGame extends TPGameBase {
 	@Override
 	protected void init() {
 		cam = new PerspectiveCamera();
-		
+
 		// Initialize assets
 		img = AssetUtils.textureFromFile("models/ship.png");
 		img2 = AssetUtils.textureFromFile("models/plain.jpg");
@@ -63,7 +63,7 @@ public class TestGame extends TPGameBase {
 		mi.setShininess(4);
 		models.add(mi);
 		
-		directionalLights.add(Light.newDirectional(new Vector3(-0.6199997f, 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
+		directionalLights.add(Light.newDirectional(new Vector3(-(float)(Math.PI/4), 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
 		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(0.2f, 0.2f, 0.2f)));
 		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(1,1,1),
 				(float) Math.PI / 7));
@@ -83,6 +83,9 @@ public class TestGame extends TPGameBase {
 		if (Gdx.input.isKeyPressed(Keys.V)) {
 			spot.setPosition(cam.getPosition());
 			spot.setOrientation(cam.getOrientation());
+			spot.model.setOrientation(spot.getOrientation());
+			spot.model.setPosition(spot.getPosition());
+			spot.model.rotate((float)(-Math.PI/2),0,0);
 		}
 		
 		for (ModelInstance ship : ships) {

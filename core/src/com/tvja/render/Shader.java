@@ -117,6 +117,7 @@ public class Shader {
             } else {
                 model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
             }
+
         }
 
         shaderProgram.end();
