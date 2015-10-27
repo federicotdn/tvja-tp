@@ -11,6 +11,7 @@ import com.tvja.camera.PerspectiveCamera;
 import com.tvja.render.Light;
 import com.tvja.render.ModelInstance;
 import com.tvja.utils.AssetUtils;
+import com.tvja.utils.MathUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -69,6 +70,12 @@ public class TestGame extends TPGameBase {
 				(float) Math.PI / 7));
 		
 		ambientLight = new Vector3(0.05f, 0.05f, 0.05f);
+		
+		Vector3 ori = new Vector3((float)Math.PI, (float)Math.PI/2, 0);
+		System.out.println(ori);
+		Vector3 dir = MathUtils.toDirection(ori);
+		System.out.println(dir);
+		System.out.println(MathUtils.toOrientation(dir));
 	}
 
 	@Override
