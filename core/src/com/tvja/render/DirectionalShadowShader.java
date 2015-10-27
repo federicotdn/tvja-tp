@@ -1,13 +1,14 @@
 package com.tvja.render;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GLTexture;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.tvja.utils.AssetUtils;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +37,8 @@ public class DirectionalShadowShader extends DirectionalShader {
     }
 
     @Override
-    protected void setShadowUniforms(List<FrameBuffer> shadowMaps) {
-        FrameBuffer fb = shadowMaps.get(0);
+    protected void setShadowUniforms(GLFrameBuffer<? extends GLTexture> shadowMap) {
+        FrameBuffer fb = (FrameBuffer) shadowMap;
         Texture tt = fb.getColorBufferTexture();
 
         Gdx.gl20.glActiveTexture(Gdx.gl20.GL_TEXTURE2);
@@ -50,17 +51,15 @@ public class DirectionalShadowShader extends DirectionalShader {
     private ModelInstance fsQuad = new ModelInstance(AssetUtils.loadFullScreenQuad(), null);
 
     @Override
-    protected Map<Light, List<FrameBuffer>> setUpShader(List<ModelInstance> models, List<Light> lights) {
+    protected Map<Light, GLFrameBuffer<? extends GLTexture>> setUpShader(List<ModelInstance> models, List<Light> lights) {
         frameBuffer.begin();
         Gdx.gl.glClear(Gdx.gl20.GL_COLOR_BUFFER_BIT | Gdx.gl20.GL_DEPTH_BUFFER_BIT);
         earlyZShader.render(lights.get(0), models);
         depthShader.render(lights.get(0), models, null);
         frameBuffer.end();
 
-        Map<Light, List<FrameBuffer>> map = new HashMap<>();
-        List<FrameBuffer> l = new LinkedList<>();
-        l.add(frameBuffer);
-        map.put(lights.get(0), l);
+        Map<Light, GLFrameBuffer<? extends GLTexture>> map = new HashMap<>();
+        map.put(lights.get(0), frameBuffer);
 
 //	    FrameBuffer fb = frameBuffer;
 //	    Texture tt = fb.getColorBufferTexture();
@@ -69,7 +68,7 @@ public class DirectionalShadowShader extends DirectionalShader {
 //	    tt.bind();
 //
 //	    setUniformi("u_shadow_map", 2);
-	
+//
 //	    fullscreenShader.renderFullscreen(fsQuad, 2);
         
         return map;

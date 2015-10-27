@@ -17,6 +17,7 @@ public class PerspectiveCamera extends ViewWorldObject {
 
 	public PerspectiveCamera() {
 		this(DEFAULT_NEARZ, DEFAULT_FARZ, DEFAULT_FOVX, DEFAULT_FOVY);
-		this.setOrientation(new Vector3(0, -(float) Math.PI, 0));
+		this.setOrientation(new Vector3(-(float) Math.PI/4, -(float) Math.PI, 0));
+		this.setPosition(new Vector3(0,2, -2));
 	}
 }

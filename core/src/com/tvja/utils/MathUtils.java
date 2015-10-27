@@ -24,9 +24,9 @@ public class MathUtils {
     public static Vector3 toOrientation(Vector3 direction) {
     	Vector3 dir = direction.cpy().nor();
     	Vector3 ori = new Vector3();
-    	ori.x = (float)Math.acos(dir.dot(new Vector3(1, 0, 0)));
-    	ori.y = (float)Math.acos(dir.dot(new Vector3(0, 1, 0)));
-    	ori.z = (float)Math.acos(dir.dot(new Vector3(0, 0, 1)));
+    	ori.x = Math.signum(direction.y + direction.z) * (float) Math.acos(dir.dot(new Vector3(1, 0, 0)));
+    	ori.y =  Math.signum(direction.x + direction.z) * (float)Math.acos(dir.dot(new Vector3(0, 1, 0)));
+    	ori.z =  Math.signum(direction.x + direction.y) * (float)Math.acos(dir.dot(new Vector3(0, 0, 1)));
     	return ori;
     }
     

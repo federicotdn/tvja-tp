@@ -2,7 +2,8 @@ package com.tvja.render;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.GLTexture;
+import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.tvja.utils.MathUtils;
@@ -79,11 +80,11 @@ public class Shader {
         //Do nothing by default
     }
 
-    protected void setShadowUniforms(List<FrameBuffer> shadowMaps) {
+    protected void setShadowUniforms(GLFrameBuffer<? extends GLTexture> shadowMap) {
         //Do nothing by default
     }
 
-    protected Map<Light, List<FrameBuffer>> setUpShader(List<ModelInstance> models, List<Light> lights) {
+    protected Map<Light, GLFrameBuffer<? extends GLTexture>> setUpShader(List<ModelInstance> models, List<Light> lights) {
         return null;
     }
 
@@ -92,7 +93,7 @@ public class Shader {
             return;
         }
 
-        Map<Light, List<FrameBuffer>> shadowMaps = setUpShader(models, lights);
+        Map<Light, GLFrameBuffer<? extends GLTexture>> shadowMaps = setUpShader(models, lights);
 
 //        if (shadowMaps != null) {
 //            return;

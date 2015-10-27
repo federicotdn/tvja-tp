@@ -45,11 +45,11 @@ void main()
 		bias = clamp(bias, 0, 0.0005);
         float visibility = 1.0;
 
-		for (int i=0; i < 9; i++)
+		for (int i=0; i < 13; i++)
 		{
         	if (unpack(texture2D( u_shadow_map, ((v_shadow_coord.xy/v_shadow_coord.w + poissonDisk[i]/700.0)) ))  <  (v_shadow_coord.z - bias)/v_shadow_coord.w)
         	{
-        		visibility -= 0.1;
+        		visibility -= 0.076;
 			}
         }
 

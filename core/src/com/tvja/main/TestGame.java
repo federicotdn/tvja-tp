@@ -11,7 +11,6 @@ import com.tvja.camera.PerspectiveCamera;
 import com.tvja.render.Light;
 import com.tvja.render.ModelInstance;
 import com.tvja.utils.AssetUtils;
-import com.tvja.utils.MathUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -65,17 +64,11 @@ public class TestGame extends TPGameBase {
 		models.add(mi);
 		
 		directionalLights.add(Light.newDirectional(new Vector3(-(float)(Math.PI/4), 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
-		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(0.2f, 0.2f, 0.2f)));
+		pointLights.add(Light.newPoint(new Vector3(0, 10, 0), new Vector3(0.5f, 0.5f, 0.5f)));
 		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(1,1,1),
 				(float) Math.PI / 7));
 		
 		ambientLight = new Vector3(0.05f, 0.05f, 0.05f);
-		
-		Vector3 ori = new Vector3((float)Math.PI, (float)Math.PI/2, 0);
-		System.out.println(ori);
-		Vector3 dir = MathUtils.toDirection(ori);
-		System.out.println(dir);
-		System.out.println(MathUtils.toOrientation(dir));
 	}
 
 	@Override
@@ -86,7 +79,7 @@ public class TestGame extends TPGameBase {
 		updateAngle();
 
 		Light spot = spotLights.get(0);
-		
+
 		if (Gdx.input.isKeyPressed(Keys.V)) {
 			spot.setPosition(cam.getPosition());
 			spot.setOrientation(cam.getOrientation());

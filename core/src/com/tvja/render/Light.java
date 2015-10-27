@@ -43,6 +43,12 @@ public class Light extends ViewWorldObject {
         return l;
     }
 
+    public static Light newPointSideLight(Vector3 position, Vector3 orientation) {
+        Light l = new Light(position, orientation, new Vector3(1,1,1), null);
+        l.projection = MathUtils.genPerspectiveProjection(nearZ, farZ, 45, 45);
+        return l;
+    }
+
     public static Light newPoint(Vector3 position, Vector3 color) {
         Light l = new Light(position, new Vector3(), color, null);
         l.projection = MathUtils.genPerspectiveProjection(nearZ, farZ, 60, 60);

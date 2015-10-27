@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.tvja.render.*;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public abstract class TPGameBase extends ApplicationAdapter {
@@ -36,7 +35,7 @@ public abstract class TPGameBase extends ApplicationAdapter {
         init();
 
         directionalShader = new DirectionalShadowShader();
-        pointShader = new PointShader();
+        pointShader = new PointShadowShader();
         spotShader = new SpotShadowShader();
         
         ambientShader = new SingleColorShader(getAmbientLight());
@@ -52,7 +51,9 @@ public abstract class TPGameBase extends ApplicationAdapter {
         Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
         	
         Gdx.gl20.glEnable(GL20.GL_BLEND);
-        Gdx.gl20.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE);    
+        Gdx.gl20.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE);
+
+        Gdx.gl20.glEnable(GL20.GL_TEXTURE_CUBE_MAP);
     }
 
     @Override
@@ -66,17 +67,17 @@ public abstract class TPGameBase extends ApplicationAdapter {
         earlyZShader.render(cam, models);
         ambientShader.render(cam, models);
 
-        spotShader.render(cam, models, spotLights);
-        //pointShader.render(cam, models, pointLights);
-        directionalShader.render(cam, models, directionalLights);
+//        spotShader.render(cam, models, spotLights);
+        pointShader.render(cam, models, pointLights);
+//        directionalShader.render(cam, models, directionalLights);
 
         // Hack! Change later
 
-        List<ModelInstance> m = new LinkedList<>();
-        m.add(directionalLights.get(0).model);
-        ((SingleColorShader)ambientShader).setAmbientColor(new Vector3(1,0,0));
-        ambientShader.render(cam, m);
-        ((SingleColorShader)ambientShader).setAmbientColor(getAmbientLight());
+//        List<ModelInstance> m = new LinkedList<>();
+//        m.add(directionalLights.get(0).model);
+//        ((SingleColorShader)ambientShader).setAmbientColor(new Vector3(1,0,0));
+//        ambientShader.render(cam, m);
+//        ((SingleColorShader)ambientShader).setAmbientColor(getAmbientLight());
     }
 
     private void checkExit() {
