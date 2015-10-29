@@ -31,7 +31,7 @@ public class SpotShadowShader extends SpotShader {
     }
 
     @Override
-    protected void setLightUniforms(Light light, ModelInstance model) {
+    protected void setLightUniforms(Light light, BaseModel model) {
         super.setLightUniforms(light, model);
         setUniformMat4("u_light_bias_mvp", biasMat.cpy().mul(light.getViewProjection().mul(model.getTRS())));
     }
@@ -51,7 +51,7 @@ public class SpotShadowShader extends SpotShader {
     }
 
     @Override
-    protected Map<Light, List<FrameBuffer>> setUpShader(List<ModelInstance> models, List<Light> lights) {
+    protected Map<Light, List<FrameBuffer>> setUpShader(List<BaseModel> models, List<Light> lights) {
         frameBuffer.begin();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         earlyZShader.render(lights.get(0), models);

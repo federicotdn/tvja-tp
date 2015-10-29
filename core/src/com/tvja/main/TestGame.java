@@ -2,16 +2,19 @@ package com.tvja.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.math.Vector3;
 import com.tvja.camera.FPSController;
 import com.tvja.camera.OrthogonalCamera;
 import com.tvja.camera.PerspectiveCamera;
+import com.tvja.render.AnimationModel;
+import com.tvja.render.BaseModel;
 import com.tvja.render.Light;
 import com.tvja.render.ModelInstance;
 import com.tvja.utils.AssetUtils;
-import com.tvja.utils.MathUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,12 +25,14 @@ public class TestGame extends TPGameBase {
 	private Mesh shipMesh;
 	private Mesh cubeMesh;
     private FPSController controller = new FPSController();
+	private AssetManager assetManager =  new AssetManager();
+	private boolean loading;
 
 	private float angle = 0;
 	
 	private Vector3 ambientLight;
 	
-	private List<ModelInstance> ships = new LinkedList<>();
+	private List<BaseModel> ships = new LinkedList<>();
 	
 	@Override
 	protected void init() {
@@ -63,7 +68,8 @@ public class TestGame extends TPGameBase {
 		mi.scale(2000, 0.5f, 2000);
 		mi.setShininess(4);
 		models.add(mi);
-		
+
+
 		directionalLights.add(Light.newDirectional(new Vector3(-(float)(Math.PI/4), 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
 		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(0.2f, 0.2f, 0.2f)));
 		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(1,1,1),
@@ -71,15 +77,25 @@ public class TestGame extends TPGameBase {
 		
 		ambientLight = new Vector3(0.05f, 0.05f, 0.05f);
 		
-		Vector3 ori = new Vector3((float)Math.PI, (float)Math.PI/2, 0);
-		System.out.println(ori);
-		Vector3 dir = MathUtils.toDirection(ori);
-		System.out.println(dir);
-		System.out.println(MathUtils.toOrientation(dir));
+		// move to another scene later
+		loading = true;
+		assetManager.load("models/ironman.g3db", Model.class);
 	}
 
 	@Override
 	protected void update() {
+		if (loading && assetManager.update()) {
+			loading = false;
+			Model model = assetManager.get("models/ironman.g3db", Model.class);
+			Texture tex = AssetUtils.textureFromFile("models/ironman.dff.png");
+
+			AnimationModel animationModel = new AnimationModel(model, tex);
+			animationModel.setShininess(5);
+			animationModel.setPosition(new Vector3(0, -0.5f, 3));
+			animationModel.setOrientation(new Vector3((float)-Math.PI/2, (float)-Math.PI ,0));
+			models.add(animationModel);
+		}
+
         controller.updatePositionOrientation(cam);
         updateCameraType();
 		
@@ -95,7 +111,7 @@ public class TestGame extends TPGameBase {
 			spot.model.rotate((float)(-Math.PI/2),0,0);
 		}
 		
-		for (ModelInstance ship : ships) {
+		for (BaseModel ship : ships) {
 			ship.rotate(0, 0, 0.01f);
 		}
 	}

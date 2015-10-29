@@ -14,12 +14,12 @@ public class PointShader extends Shader {
     }
 
     @Override
-    protected void setModelUniforms(ViewWorldObject view, ModelInstance model) {
+    protected void setModelUniforms(ViewWorldObject view, BaseModel model) {
         setCommonModelUniforms(view, model);
     }
 
     @Override
-    protected void setLightUniforms(Light light, ModelInstance model) {
+    protected void setLightUniforms(Light light, BaseModel model) {
         setUniform4fv("u_light_position", MathUtils.toVec4fPoint(light.getPosition()));
     }
 }

@@ -20,7 +20,7 @@ public abstract class TPGameBase extends ApplicationAdapter {
     private Shader ambientShader;
     private Shader earlyZShader;
 
-    final protected List<ModelInstance> models = new ArrayList<>();
+    final protected List<BaseModel> models = new ArrayList<>();
 
     final protected List<Light> directionalLights = new ArrayList<>();
     final protected List<Light> spotLights = new ArrayList<>();
@@ -72,7 +72,7 @@ public abstract class TPGameBase extends ApplicationAdapter {
 
         // Hack! Change later
 
-        List<ModelInstance> m = new LinkedList<>();
+        List<BaseModel> m = new LinkedList<>();
         m.add(directionalLights.get(0).model);
         ((SingleColorShader)ambientShader).setAmbientColor(new Vector3(1,0,0));
         ambientShader.render(cam, m);

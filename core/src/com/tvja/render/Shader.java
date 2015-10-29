@@ -52,7 +52,7 @@ public class Shader {
         return String.join(System.getProperty("line.separator"), lines);
     }
 
-    public void render(ViewWorldObject view, List<ModelInstance> models) {
+    public void render(ViewWorldObject view, List<BaseModel> models) {
         render(view, models, null);
     }
 
@@ -63,7 +63,7 @@ public class Shader {
         shaderProgram.end();
     }
 
-    protected void setCommonModelUniforms(ViewWorldObject view, ModelInstance model) {
+    protected void setCommonModelUniforms(ViewWorldObject view, BaseModel model) {
         setUniform4fv("u_cam_pos", MathUtils.toVec4fPoint(view.getPosition()));
         setUniformMat4("u_model_mat", model.getTRS());
         setUniformMat4("u_model_rotation_mat", model.getR());
@@ -71,11 +71,11 @@ public class Shader {
         setUniformi("u_shininess", model.getShininess());
     }
 
-    protected void setModelUniforms(ViewWorldObject view, ModelInstance model) {
+    protected void setModelUniforms(ViewWorldObject view, BaseModel model) {
         //Do nothing by default
     }
 
-    protected void setLightUniforms(Light light, ModelInstance model) {
+    protected void setLightUniforms(Light light, BaseModel model) {
         //Do nothing by default
     }
 
@@ -83,11 +83,11 @@ public class Shader {
         //Do nothing by default
     }
 
-    protected Map<Light, List<FrameBuffer>> setUpShader(List<ModelInstance> models, List<Light> lights) {
+    protected Map<Light, List<FrameBuffer>> setUpShader(List<BaseModel> models, List<Light> lights) {
         return null;
     }
 
-    public void render(ViewWorldObject view, List<ModelInstance> models, List<Light> lights) {
+    public void render(ViewWorldObject view, List<BaseModel> models, List<Light> lights) {
         if (view == null || models == null || models.isEmpty()) {
             return;
         }
@@ -100,9 +100,8 @@ public class Shader {
 
         shaderProgram.begin();
 
-        for (ModelInstance model : models) {
-            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-            model.bind(0);
+        for (BaseModel model : models) {
+            model.bind();
             setUniformMat4("u_mvp", view.getViewProjection().mul(model.getTRS()));
 
             setModelUniforms(view, model);

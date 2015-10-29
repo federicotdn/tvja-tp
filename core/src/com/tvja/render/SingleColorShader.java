@@ -24,7 +24,7 @@ public class SingleColorShader extends Shader {
     }
 
     @Override
-    protected void setModelUniforms(ViewWorldObject view, ModelInstance model) {
+    protected void setModelUniforms(ViewWorldObject view, BaseModel model) {
         setUniform4fv("u_ambient_color", MathUtils.toVec4fPoint(ambientColor));
     }
 
