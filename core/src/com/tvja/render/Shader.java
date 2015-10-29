@@ -102,7 +102,7 @@ public class Shader {
 
         for (ModelInstance model : models) {
             Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-            model.getTex().bind();
+            model.bind(0);
             setUniformMat4("u_mvp", view.getViewProjection().mul(model.getTRS()));
 
             setModelUniforms(view, model);
@@ -112,10 +112,10 @@ public class Shader {
                     setUniform4fv("u_light_color", MathUtils.toVec4fPoint(light.getColor()));
                     setLightUniforms(light, model);
                     setShadowUniforms(shadowMaps != null ? shadowMaps.get(light) : null);
-                    model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
+                    model.render(shaderProgram, GL20.GL_TRIANGLES);
                 }
             } else {
-                model.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
+                model.render(shaderProgram, GL20.GL_TRIANGLES);
             }
 
         }

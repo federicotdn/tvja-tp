@@ -2,8 +2,9 @@ package com.tvja.render;
 
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
-public class ModelInstance extends WorldObject {
+public class ModelInstance extends WorldObject implements RenderableObject {
 	
 	private static final Integer DEFAULT_SHININESS = 3;
 	
@@ -32,5 +33,16 @@ public class ModelInstance extends WorldObject {
     
     public Texture getTex() {
         return tex;
+    }
+
+
+    @Override
+    public void render(ShaderProgram shaderProgram, int primitiveType) {
+        mesh.render(shaderProgram, primitiveType);
+    }
+
+    @Override
+    public void bind(int textureBind) {
+        tex.bind(textureBind);
     }
 }
