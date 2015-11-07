@@ -29,6 +29,10 @@ public class DirectionalShadowShader extends DirectionalShader {
         frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, 4096, 4096, true);
     }
 
+    public DirectionalShadowShader(String vs, String fs, ShaderFunction shaderFunction) {
+        super(vs, fs, shaderFunction);
+    }
+
     @Override
     protected void setLightUniforms(Light light, BaseModel model) {
         super.setLightUniforms(light, model);
@@ -50,7 +54,7 @@ public class DirectionalShadowShader extends DirectionalShader {
     private ModelInstance fsQuad = new ModelInstance(AssetUtils.loadFullScreenQuad(), null);
 
     @Override
-    protected Map<Light, List<FrameBuffer>> setUpShader(List<BaseModel> models, List<Light> lights) {
+    protected Map<Light, List<FrameBuffer>> setUpShader(List<? extends BaseModel> models, List<Light> lights) {
         frameBuffer.begin();
         Gdx.gl.glClear(Gdx.gl20.GL_COLOR_BUFFER_BIT | Gdx.gl20.GL_DEPTH_BUFFER_BIT);
         earlyZShader.render(lights.get(0), models);

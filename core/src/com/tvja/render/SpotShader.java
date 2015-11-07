@@ -17,6 +17,10 @@ public class SpotShader extends Shader {
         super(vs, fs);
     }
 
+    public SpotShader(String vs, String fs, ShaderFunction shaderFunction) {
+        super(vs, fs, shaderFunction);
+    }
+
     @Override
     protected void setModelUniforms(ViewWorldObject view, BaseModel model) {
         setCommonModelUniforms(view, model);

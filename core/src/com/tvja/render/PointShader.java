@@ -13,6 +13,10 @@ public class PointShader extends Shader {
         super(VS, FS);
     }
 
+    public PointShader(String vs, String fs, ShaderFunction shaderFunction) {
+        super(vs, fs, shaderFunction);
+    }
+
     @Override
     protected void setModelUniforms(ViewWorldObject view, BaseModel model) {
         setCommonModelUniforms(view, model);

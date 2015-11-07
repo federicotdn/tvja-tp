@@ -26,7 +26,7 @@ public class ModelInstance extends BaseModel {
 
 
     @Override
-    public void render(ShaderProgram shaderProgram, int primitiveType) {
+    public void render(ShaderProgram shaderProgram, int primitiveType, ViewWorldObject view) {
         mesh.render(shaderProgram, primitiveType);
     }
 

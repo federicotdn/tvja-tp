@@ -32,8 +32,8 @@ public class TestGame extends TPGameBase {
 	
 	private Vector3 ambientLight;
 	
-	private List<BaseModel> ships = new LinkedList<>();
-	
+	private List<ModelInstance> ships = new LinkedList<>();
+
 	@Override
 	protected void init() {
 		cam = new PerspectiveCamera();
@@ -70,30 +70,35 @@ public class TestGame extends TPGameBase {
 		models.add(mi);
 
 
-		directionalLights.add(Light.newDirectional(new Vector3(-(float)(Math.PI/4), 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
+		directionalLights.add(Light.newDirectional(new Vector3(-(float) (Math.PI / 4), 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
 		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(0.2f, 0.2f, 0.2f)));
-		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(1,1,1),
+		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI / 2, 0, 0), new Vector3(1, 1, 1),
 				(float) Math.PI / 7));
 		
 		ambientLight = new Vector3(0.05f, 0.05f, 0.05f);
 		
 		// move to another scene later
 		loading = true;
-		assetManager.load("models/ironman.g3db", Model.class);
+		assetManager.load("models/Dave.g3db", Model.class);
 	}
 
 	@Override
 	protected void update() {
 		if (loading && assetManager.update()) {
 			loading = false;
-			Model model = assetManager.get("models/ironman.g3db", Model.class);
-			Texture tex = AssetUtils.textureFromFile("models/ironman.dff.png");
+			Model model = assetManager.get("models/Dave.g3db", Model.class);
+			Texture tex = AssetUtils.textureFromFile("models/uv_dave_mapeo.jpg");
 
-			AnimationModel animationModel = new AnimationModel(model, tex);
+			com.badlogic.gdx.graphics.g3d.ModelInstance instance = new com.badlogic.gdx.graphics.g3d.ModelInstance(model);
+			instance.transform.scale(0.2f, 0.2f, 0.2f);
+			instance.transform.translate(0, 0, -5);
+
+			AnimationModel animationModel = new AnimationModel(instance, tex);
 			animationModel.setShininess(5);
-			animationModel.setPosition(new Vector3(0, -0.5f, 3));
-			animationModel.setOrientation(new Vector3((float)-Math.PI/2, (float)-Math.PI ,0));
-			models.add(animationModel);
+//			animationModel.setPosition(new Vector3(0, 0.8f, 7));
+//			animationModel.setScale(new Vector3(0.01f, 0.01f, 0.01f));
+			animationModel.rotate(0, (float)Math.PI, 0);
+			animatedModels.add(animationModel);
 		}
 
         controller.updatePositionOrientation(cam);
@@ -113,6 +118,10 @@ public class TestGame extends TPGameBase {
 		
 		for (BaseModel ship : ships) {
 			ship.rotate(0, 0, 0.01f);
+		}
+
+		for (AnimationModel aModel : animatedModels) {
+			aModel.getAnimationController().update(Gdx.graphics.getDeltaTime());
 		}
 	}
 

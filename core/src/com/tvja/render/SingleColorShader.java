@@ -18,6 +18,12 @@ public class SingleColorShader extends Shader {
         this.ambientColor = ambientColor;
     }
 
+    public SingleColorShader(String vertex, String fragment, ShaderFunction shaderFunction) {
+        super(vertex, fragment, shaderFunction);
+        this.ambientColor = COLOR_BLACK;
+    }
+
+
     public SingleColorShader() {
         super(VS, FS);
         this.ambientColor = COLOR_BLACK;

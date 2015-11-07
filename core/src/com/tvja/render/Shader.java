@@ -9,6 +9,7 @@ import com.tvja.utils.MathUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Shader {
     protected static final Matrix4 biasMat = new Matrix4(new float[]{
@@ -18,6 +19,7 @@ public class Shader {
             0.5f, 0.5f, 0.5f, 1.0f
     });
     protected ShaderProgram shaderProgram;
+    private Optional<ShaderFunction> shaderFunction;
 
     public Shader(String vertex, String fragment) {
         String vs = buildShaderString(vertex);
@@ -29,6 +31,13 @@ public class Shader {
             System.out.println(shaderProgram.getLog());
             throw new IllegalStateException("Unable to compile GLSL shader.");
         }
+
+        this.shaderFunction = Optional.empty();
+    }
+
+    public Shader(String vertex, String fragment, ShaderFunction shaderFunction) {
+        this(vertex, fragment);
+        this.shaderFunction = Optional.of(shaderFunction);
     }
 
     /*
@@ -52,7 +61,7 @@ public class Shader {
         return String.join(System.getProperty("line.separator"), lines);
     }
 
-    public void render(ViewWorldObject view, List<BaseModel> models) {
+    public void render(ViewWorldObject view, List<? extends  BaseModel> models) {
         render(view, models, null);
     }
 
@@ -83,11 +92,11 @@ public class Shader {
         //Do nothing by default
     }
 
-    protected Map<Light, List<FrameBuffer>> setUpShader(List<BaseModel> models, List<Light> lights) {
+    protected Map<Light, List<FrameBuffer>> setUpShader(List<? extends BaseModel> models, List<Light> lights) {
         return null;
     }
 
-    public void render(ViewWorldObject view, List<BaseModel> models, List<Light> lights) {
+    public void render(ViewWorldObject view, List<? extends BaseModel> models, List<Light> lights) {
         if (view == null || models == null || models.isEmpty()) {
             return;
         }
@@ -105,16 +114,17 @@ public class Shader {
             setUniformMat4("u_mvp", view.getViewProjection().mul(model.getTRS()));
 
             setModelUniforms(view, model);
+            shaderFunction.ifPresent(f -> f.apply(model, shaderProgram));
 
             if (lights != null && !lights.isEmpty()) {
                 for (Light light : lights) {
                     setUniform4fv("u_light_color", MathUtils.toVec4fPoint(light.getColor()));
                     setLightUniforms(light, model);
                     setShadowUniforms(shadowMaps != null ? shadowMaps.get(light) : null);
-                    model.render(shaderProgram, GL20.GL_TRIANGLES);
+                    model.render(shaderProgram, GL20.GL_TRIANGLES, view);
                 }
             } else {
-                model.render(shaderProgram, GL20.GL_TRIANGLES);
+                model.render(shaderProgram, GL20.GL_TRIANGLES, view);
             }
 
         }

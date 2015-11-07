@@ -22,6 +22,6 @@ public abstract class BaseModel extends WorldObject {
           return this;
      }
 
-     public abstract void render(ShaderProgram shaderProgram, int primitiveType);
+     public abstract void render(ShaderProgram shaderProgram, int primitiveType, ViewWorldObject view);
      public abstract void bind();
 }

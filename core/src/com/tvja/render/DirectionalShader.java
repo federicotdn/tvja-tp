@@ -13,6 +13,10 @@ public class DirectionalShader extends Shader {
        super(VS, FS);
     }
 
+    public DirectionalShader(String vs, String fs, ShaderFunction shaderFunction) {
+        super(vs, fs, shaderFunction);
+    }
+
 
     protected DirectionalShader(String vs, String fs) {
         super(vs, fs);
