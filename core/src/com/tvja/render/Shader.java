@@ -33,7 +33,9 @@ public class Shader {
     protected void setCommonModelUniforms(ViewWorldObject view, BaseModel model) {
         setUniform4fv("u_cam_pos", MathUtils.toVec4fPoint(view.getPosition()));
         setUniformMat4("u_model_mat", model.getTRS());
-        setUniformMat4("u_model_rotation_mat", model.getR());
+        if (shaderProgram.hasUniform("u_model_rotation_mat")) {
+        	setUniformMat4("u_model_rotation_mat", model.getR());        	
+        }
         setUniformi("u_texture", 0); // Must match with glActiveTexture call
         setUniformi("u_shininess", model.getShininess());
     }
