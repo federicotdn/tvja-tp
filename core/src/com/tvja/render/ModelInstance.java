@@ -12,6 +12,7 @@ public class ModelInstance extends BaseModel {
     private Texture tex;
 
     public ModelInstance(Mesh mesh, Texture tex) {
+        super("shaders/defaultVS.glsl", "shaders/default-shadowVS.glsl");
         this.mesh = mesh;
         this.tex = tex;
     }
@@ -24,9 +25,9 @@ public class ModelInstance extends BaseModel {
         return tex;
     }
 
-
     @Override
     public void render(ShaderProgram shaderProgram, int primitiveType, ViewWorldObject view) {
+        shaderProgram.setUniformMatrix("u_mvp", view.getViewProjection().mul(getTRS()));
         mesh.render(shaderProgram, primitiveType);
     }
 

@@ -21,6 +21,7 @@ public class AnimationModel extends BaseModel {
     private float[] bones;
 
     public AnimationModel(ModelInstance modelInstance, Texture tex) {
+        super("shaders/animated-VS.glsl", "shaders/animated-shadow-VS.glsl");
         this.modelInstance = modelInstance;
         this.tex = tex;
         animationController = new AnimationController(modelInstance);
@@ -44,13 +45,13 @@ public class AnimationModel extends BaseModel {
             @Override
             public Renderable obtain() {
                 Renderable renderable = super.obtain();
-//                    renderable.lights = null;
                 renderable.material = null;
                 renderable.mesh = null;
                 renderable.shader = null;
                 return renderable;
             }
         };
+
         modelInstance.getRenderables(renderables, pool);
         Matrix4 idtMatrix = new Matrix4().idt();
         float[] bones = new float[32 * 16];
@@ -58,25 +59,12 @@ public class AnimationModel extends BaseModel {
             bones[i] = idtMatrix.val[i % 16];
         for (Renderable render : renderables) {
                 shaderProgram.setUniformMatrix("u_mvp", view.getViewProjection().mul(render.worldTransform));
-
-//                mvpMatrix.set(g.cam.combined);
-//                mvpMatrix.mul(render.worldTransform);
-//                charShader.setUniformMatrix("u_mvpMatrix", mvpMatrix);
-//                nMatrix.set(g.cam.view);
-//                nMatrix.mul(render.worldTransform);
-//                charShader.setUniformMatrix("u_modelViewMatrix", nMatrix);
-//                nMatrix.inv();
-//                nMatrix.tra();
-//                charShader.setUniformMatrix("u_normalMatrix", nMatrix);
-//                StaticVariables.tempMatrix.idt();
             for (int i = 0; i < bones.length; i++) {
                 final int idx = i / 16;
                 bones[i] = (render.bones == null || idx >= render.bones.length || render.bones[idx] == null) ?
                         idtMatrix.val[i % 16] : render.bones[idx].val[i % 16];
             }
-//            if (shaderProgram.hasUniform("u_bones")) {
                 shaderProgram.setUniformMatrix4fv("u_bones", bones, 0, bones.length);
-//            }
             render.mesh.render(shaderProgram, render.primitiveType, render.meshPartOffset, render.meshPartSize);
 
         }

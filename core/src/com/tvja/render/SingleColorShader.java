@@ -7,26 +7,18 @@ import com.tvja.utils.MathUtils;
  * Created by Hobbit on 10/24/15.
  */
 public class SingleColorShader extends Shader {
-    private static final String VS = "shaders/defaultVS.glsl";
     private static final String FS = "shaders/single-colorFS.glsl";
     private static final Vector3 COLOR_BLACK = new Vector3(0, 0, 0);
 
     private Vector3 ambientColor;
 
     public SingleColorShader(Vector3 ambientColor) {
-        super(VS, FS);
+        super(FS, false);
         this.ambientColor = ambientColor;
     }
 
-    public SingleColorShader(String vertex, String fragment, ShaderFunction shaderFunction) {
-        super(vertex, fragment, shaderFunction);
-        this.ambientColor = COLOR_BLACK;
-    }
-
-
     public SingleColorShader() {
-        super(VS, FS);
-        this.ambientColor = COLOR_BLACK;
+        this(COLOR_BLACK);
     }
 
     @Override

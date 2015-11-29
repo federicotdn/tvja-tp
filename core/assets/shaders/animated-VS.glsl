@@ -9,13 +9,11 @@ attribute vec2 a_boneWeight1;
 
 uniform mat4 u_mvp;
 uniform mat4 u_model_rotation_mat;
-uniform mat4 u_light_bias_mvp;
 
 varying vec4 v_position;
 varying vec4 v_normal_w;
 varying vec2 v_texCoords;
 varying vec4 v_final_pos;
-varying vec4 v_shadow_coord;
 
 uniform mat4 u_bones[12];
 
@@ -34,6 +32,4 @@ void main()
     v_final_pos = gl_Position;
 
     mat4 aux = u_model_rotation_mat;
-
-    v_shadow_coord = u_light_bias_mvp * pos;
 }

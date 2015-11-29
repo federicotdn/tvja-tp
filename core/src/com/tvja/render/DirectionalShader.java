@@ -6,20 +6,14 @@ import com.tvja.utils.MathUtils;
  * Created by Hobbit on 10/24/15.
  */
 public class DirectionalShader extends Shader {
-    private static final String VS = "shaders/defaultVS.glsl";
     private static final String FS = "shaders/phong-directionalFS.glsl";
 
     public DirectionalShader() {
-       super(VS, FS);
+       super(FS, false);
     }
 
-    public DirectionalShader(String vs, String fs, ShaderFunction shaderFunction) {
-        super(vs, fs, shaderFunction);
-    }
-
-
-    protected DirectionalShader(String vs, String fs) {
-        super(vs, fs);
+    protected DirectionalShader(String fs, boolean useShadow) {
+        super(fs, useShadow);
     }
 
     @Override

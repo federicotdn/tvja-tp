@@ -6,19 +6,14 @@ import com.tvja.utils.MathUtils;
  * Created by Hobbit on 10/24/15.
  */
 public class SpotShader extends Shader {
-    private static final String VS = "shaders/defaultVS.glsl";
     private static final String FS = "shaders/phong-spotFS.glsl";
 
     public SpotShader() {
-        super(VS, FS);
+        super(FS, false);
     }
 
-    protected SpotShader(String vs, String fs) {
-        super(vs, fs);
-    }
-
-    public SpotShader(String vs, String fs, ShaderFunction shaderFunction) {
-        super(vs, fs, shaderFunction);
+    protected SpotShader(String fs, boolean useShadow) {
+        super(fs, useShadow);
     }
 
     @Override

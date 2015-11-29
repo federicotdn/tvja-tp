@@ -6,15 +6,10 @@ import com.tvja.utils.MathUtils;
  * Created by Hobbit on 10/24/15.
  */
 public class PointShader extends Shader {
-    private static final String VS = "shaders/defaultVS.glsl";
     private static final String FS = "shaders/phong-pointFS.glsl";
 
     public PointShader() {
-        super(VS, FS);
-    }
-
-    public PointShader(String vs, String fs, ShaderFunction shaderFunction) {
-        super(vs, fs, shaderFunction);
+        super(FS, false);
     }
 
     @Override

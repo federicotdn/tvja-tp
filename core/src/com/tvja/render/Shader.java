@@ -1,6 +1,5 @@
 package com.tvja.render;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -9,7 +8,6 @@ import com.tvja.utils.MathUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class Shader {
     protected static final Matrix4 biasMat = new Matrix4(new float[]{
@@ -18,58 +16,19 @@ public class Shader {
             0.0f, 0.0f, 0.5f, 0.0f,
             0.5f, 0.5f, 0.5f, 1.0f
     });
-    protected ShaderProgram shaderProgram;
-    private Optional<ShaderFunction> shaderFunction;
 
-    public Shader(String vertex, String fragment) {
-        String vs = buildShaderString(vertex);
-        String fs = buildShaderString(fragment);
+    private String fs;
+    private String vs;
+    private boolean useShadow;
+    private ShaderProgram shaderProgram;
 
-        shaderProgram = new ShaderProgram(vs, fs);
-
-        if (!shaderProgram.isCompiled()) {
-            System.out.println(shaderProgram.getLog());
-            throw new IllegalStateException("Unable to compile GLSL shader.");
-        }
-
-        this.shaderFunction = Optional.empty();
+    public Shader(String fs, boolean useShadow) {
+        this.fs = fs;
+        this.useShadow = useShadow;
     }
 
-    public Shader(String vertex, String fragment, ShaderFunction shaderFunction) {
-        this(vertex, fragment);
-        this.shaderFunction = Optional.of(shaderFunction);
-    }
-
-    /*
-     *  :-(
-     */
-    private String buildShaderString(String fileName) {
-        String[] lines = Gdx.files.internal(fileName).readString().split("\\r?\\n");
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i].trim();
-            if (line.startsWith("//%include")) {
-                String[] parts = line.split("\\s+");
-                if (parts.length != 2) {
-                    throw new IllegalStateException("Invalid %include directive.");
-                }
-
-                String included = Gdx.files.internal(parts[1]).readString();
-                lines[i] = included;
-            }
-        }
-
-        return String.join(System.getProperty("line.separator"), lines);
-    }
-
-    public void render(ViewWorldObject view, List<? extends  BaseModel> models) {
+    public void render(ViewWorldObject view, List<? extends BaseModel> models) {
         render(view, models, null);
-    }
-
-    public void renderFullscreen(ModelInstance quad, int texture) {
-        shaderProgram.begin();
-        setUniformi("u_texture", texture);
-        quad.getMesh().render(shaderProgram, GL20.GL_TRIANGLES);
-        shaderProgram.end();
     }
 
     protected void setCommonModelUniforms(ViewWorldObject view, BaseModel model) {
@@ -88,11 +47,11 @@ public class Shader {
         //Do nothing by default
     }
 
-    protected void setShadowUniforms(List<FrameBuffer> shadowMaps) {
+    protected void setShadowUniforms(FrameBuffer shadowMap) {
         //Do nothing by default
     }
 
-    protected Map<Light, List<FrameBuffer>> setUpShader(List<? extends BaseModel> models, List<Light> lights) {
+    protected Map<Light, FrameBuffer> setUpShader(List<? extends BaseModel> models, List<Light> lights) {
         return null;
     }
 
@@ -101,20 +60,20 @@ public class Shader {
             return;
         }
 
-        Map<Light, List<FrameBuffer>> shadowMaps = setUpShader(models, lights);
-
-//        if (shadowMaps != null) {
-//            return;
-//        }
-
-        shaderProgram.begin();
+        Map<Light, FrameBuffer> shadowMaps = setUpShader(models, lights);
 
         for (BaseModel model : models) {
+            String vertex = vs;
+//            if (vs == null) {
+                vertex = useShadow ? model.getShadowVS() : model.getVS();
+//            }
+
+            shaderProgram = ShaderProgramPool.getInstance().getShaderProgram(vertex, fs);
+            shaderProgram.begin();
+
             model.bind();
-            setUniformMat4("u_mvp", view.getViewProjection().mul(model.getTRS()));
 
             setModelUniforms(view, model);
-            shaderFunction.ifPresent(f -> f.apply(model, shaderProgram));
 
             if (lights != null && !lights.isEmpty()) {
                 for (Light light : lights) {
@@ -126,10 +85,9 @@ public class Shader {
             } else {
                 model.render(shaderProgram, GL20.GL_TRIANGLES, view);
             }
-
+            shaderProgram.end();
         }
 
-        shaderProgram.end();
     }
 
     protected void setUniform4fv(String name, float[] val) {

@@ -64,13 +64,13 @@ public class TestGame extends TPGameBase {
 		ships.add(mi);
 
 		mi = new ModelInstance(cubeMesh, img2);
-		mi.translate(-1000, -1, -1000);
-		mi.scale(2000, 0.5f, 2000);
+		mi.translate(-22.5f, -1, -22.5f);
+		mi.scale(45, 0.5f, 45);
 		mi.setShininess(4);
 		models.add(mi);
 
 
-		directionalLights.add(Light.newDirectional(new Vector3(-(float) (Math.PI / 4), 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
+		directionalLights.add(Light.newDirectional(new Vector3(-(float) (3 * Math.PI / 4), 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
 		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(0.2f, 0.2f, 0.2f)));
 		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI / 2, 0, 0), new Vector3(1, 1, 1),
 				(float) Math.PI / 7));
@@ -87,18 +87,17 @@ public class TestGame extends TPGameBase {
 		if (loading && assetManager.update()) {
 			loading = false;
 			Model model = assetManager.get("models/Dave.g3db", Model.class);
-			Texture tex = AssetUtils.textureFromFile("models/uv_dave_mapeo.jpg");
+			Texture tex = AssetUtils.textureFromFile("models/dave.png");
 
 			com.badlogic.gdx.graphics.g3d.ModelInstance instance = new com.badlogic.gdx.graphics.g3d.ModelInstance(model);
 			instance.transform.scale(0.2f, 0.2f, 0.2f);
-			instance.transform.translate(0, 0, -5);
+			instance.transform.translate(0, -2, -30);
 
 			AnimationModel animationModel = new AnimationModel(instance, tex);
 			animationModel.setShininess(5);
-//			animationModel.setPosition(new Vector3(0, 0.8f, 7));
-//			animationModel.setScale(new Vector3(0.01f, 0.01f, 0.01f));
 			animationModel.rotate(0, (float)Math.PI, 0);
 			animatedModels.add(animationModel);
+			models.add(animationModel);
 		}
 
         controller.updatePositionOrientation(cam);
@@ -111,9 +110,6 @@ public class TestGame extends TPGameBase {
 		if (Gdx.input.isKeyPressed(Keys.V)) {
 			spot.setPosition(cam.getPosition());
 			spot.setOrientation(cam.getOrientation());
-			spot.model.setOrientation(spot.getOrientation());
-			spot.model.setPosition(spot.getPosition());
-			spot.model.rotate((float)(-Math.PI/2),0,0);
 		}
 		
 		for (BaseModel ship : ships) {

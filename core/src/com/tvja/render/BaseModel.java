@@ -8,9 +8,17 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 public abstract class BaseModel extends WorldObject {
      private static final Integer DEFAULT_SHININESS = 3;
      private Integer shininess;
+     private String VS;
+     private String shadowVS;
 
-     public BaseModel() {
+     public BaseModel(String VS, String shadowVS) {
           shininess = null;
+          this.VS = VS;
+          this.shadowVS = shadowVS;
+     }
+
+     public String getShadowVS() {
+          return shadowVS;
      }
 
      public Integer getShininess() {
@@ -20,6 +28,10 @@ public abstract class BaseModel extends WorldObject {
      public BaseModel setShininess(Integer sh) {
           shininess = sh;
           return this;
+     }
+
+     public String getVS() {
+          return VS;
      }
 
      public abstract void render(ShaderProgram shaderProgram, int primitiveType, ViewWorldObject view);
