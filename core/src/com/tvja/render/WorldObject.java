@@ -2,6 +2,7 @@ package com.tvja.render;
 
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.tvja.net.NetworkObject;
 import com.tvja.utils.MathUtils;
 
 /*
@@ -18,6 +19,12 @@ public abstract class WorldObject {
 	private Matrix4 trs;
 	
 	private boolean modified;
+
+	public WorldObject(NetworkObject no) {
+		setPosition(no.getPosition());
+		setOrientation(no.getOrientation());
+		setScale(no.getScaled());
+	}
 	
 	public WorldObject() {
 		position = new Vector3();
