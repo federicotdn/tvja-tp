@@ -80,6 +80,8 @@ public class TestGame extends TPGameBase {
 		// move to another scene later
 		loading = true;
 		assetManager.load("models/Dave.g3db", Model.class);
+
+		groupModels();
 	}
 
 	@Override
@@ -98,6 +100,7 @@ public class TestGame extends TPGameBase {
 			animationModel.rotate(0, (float)Math.PI, 0);
 			animatedModels.add(animationModel);
 			models.add(animationModel);
+			groupModels();
 		}
 
         controller.updatePositionOrientation(cam);

@@ -18,7 +18,6 @@ public class Shader {
     });
 
     private String fs;
-    private String vs;
     private boolean useShadow;
     private ShaderProgram shaderProgram;
 
@@ -27,7 +26,7 @@ public class Shader {
         this.useShadow = useShadow;
     }
 
-    public void render(ViewWorldObject view, List<? extends BaseModel> models) {
+    public void render(ViewWorldObject view, Map<String, List<BaseModel>> models) {
         render(view, models, null);
     }
 
@@ -51,41 +50,45 @@ public class Shader {
         //Do nothing by default
     }
 
-    protected Map<Light, FrameBuffer> setUpShader(List<? extends BaseModel> models, List<Light> lights) {
+    protected Map<Light, FrameBuffer> setUpShader(Map<String, List<BaseModel>> models, List<Light> lights) {
         return null;
     }
 
-    public void render(ViewWorldObject view, List<? extends BaseModel> models, List<Light> lights) {
+    public void render(ViewWorldObject view, Map<String, List<BaseModel>> models, List<Light> lights) {
         if (view == null || models == null || models.isEmpty()) {
             return;
         }
 
         Map<Light, FrameBuffer> shadowMaps = setUpShader(models, lights);
 
-        for (BaseModel model : models) {
-            String vertex = vs;
-//            if (vs == null) {
-                vertex = useShadow ? model.getShadowVS() : model.getVS();
-//            }
-
+        for (String vs : models.keySet()) {
+            BaseModel m = models.get(vs).get(0);
+            String vertex = useShadow ? m.getShadowVS() : m.getVS();
             shaderProgram = ShaderProgramPool.getInstance().getShaderProgram(vertex, fs);
             shaderProgram.begin();
+            for (BaseModel model : models.get(vs)) {
 
-            model.bind();
+                model.bind();
 
-            setModelUniforms(view, model);
+                setModelUniforms(view, model);
 
-            if (lights != null && !lights.isEmpty()) {
-                for (Light light : lights) {
-                    setUniform4fv("u_light_color", MathUtils.toVec4fPoint(light.getColor()));
-                    setLightUniforms(light, model);
-                    setShadowUniforms(shadowMaps != null ? shadowMaps.get(light) : null);
+                if (lights != null && !lights.isEmpty()) {
+                    for (Light light : lights) {
+                        setUniform4fv("u_light_color", MathUtils.toVec4fPoint(light.getColor()));
+                        setLightUniforms(light, model);
+                        setShadowUniforms(shadowMaps != null ? shadowMaps.get(light) : null);
+                        model.render(shaderProgram, GL20.GL_TRIANGLES, view);
+                    }
+                } else {
                     model.render(shaderProgram, GL20.GL_TRIANGLES, view);
                 }
-            } else {
-                model.render(shaderProgram, GL20.GL_TRIANGLES, view);
             }
             shaderProgram.end();
+        }
+        if (shadowMaps != null) {
+            for (FrameBuffer fb : shadowMaps.values()) {
+                FrameBufferPool.getInstance().returnFrameBuffer(fb);
+            }
         }
 
     }

@@ -2,7 +2,6 @@ package com.tvja.render;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 
@@ -15,8 +14,6 @@ import java.util.Map;
  */
 public class SpotShadowShader extends SpotShader {
     private static final String FS = "shaders/shadow-spotFS.glsl";
-
-    private FrameBuffer frameBuffer;
     private Shader depthShader;
     private SingleColorShader earlyZShader;
 
@@ -24,7 +21,6 @@ public class SpotShadowShader extends SpotShader {
         super(FS, true);
         depthShader = new Shader("shaders/depthFS.glsl", false);
         earlyZShader = new SingleColorShader();
-        frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, 2048, 2048, true);
     }
 
     @Override
@@ -44,15 +40,19 @@ public class SpotShadowShader extends SpotShader {
     }
 
     @Override
-    protected Map<Light, FrameBuffer> setUpShader(List<? extends BaseModel> models, List<Light> lights) {
-        frameBuffer.begin();
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-        earlyZShader.render(lights.get(0), models);
-        depthShader.render(lights.get(0), models, null);
-        frameBuffer.end();
-
+    protected Map<Light, FrameBuffer> setUpShader(Map<String, List<BaseModel>> models, List<Light> lights) {
         Map<Light, FrameBuffer> map = new HashMap<>();
-        map.put(lights.get(0), frameBuffer);
+
+        for (Light l : lights) {
+            FrameBuffer fb = FrameBufferPool.getInstance().getFrameBuffer(2048);
+            fb.begin();
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+            earlyZShader.render(l, models);
+            depthShader.render(l, models, null);
+            fb.end();
+
+            map.put(lights.get(0), fb);
+        }
 
         return map;
     }

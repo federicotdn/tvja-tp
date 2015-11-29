@@ -7,12 +7,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector3;
 import com.tvja.render.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public abstract class TPGameBase extends ApplicationAdapter {
     final protected List<BaseModel> models = new ArrayList<>();
+    final protected Map<String, List<BaseModel>> groupedModels = new HashMap<>();
     final protected List<AnimationModel> animatedModels = new LinkedList<>();
     final protected List<Light> directionalLights = new ArrayList<>();
     final protected List<Light> spotLights = new ArrayList<>();
@@ -62,18 +61,28 @@ public abstract class TPGameBase extends ApplicationAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        earlyZShader.render(cam, models);
+        earlyZShader.render(cam, groupedModels);
 
-        ambientShader.render(cam, models);
+        ambientShader.render(cam, groupedModels);
 
-        spotShader.render(cam, models, spotLights);
+        spotShader.render(cam, groupedModels, spotLights);
 //        pointShader.render(cam, models, pointLights);
-        directionalShader.render(cam, models, directionalLights);
+        directionalShader.render(cam, groupedModels, directionalLights);
     }
 
     private void checkExit() {
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
             Gdx.app.exit();
+        }
+    }
+
+    public void groupModels() {
+        groupedModels.clear();
+        for (BaseModel bm : models) {
+            if (!groupedModels.containsKey(bm.getVS())) {
+                groupedModels.put(bm.getVS(), new LinkedList<>());
+            }
+            groupedModels.get(bm.getVS()).add(bm);
         }
     }
 }
