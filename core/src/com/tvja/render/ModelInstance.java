@@ -1,29 +1,20 @@
 package com.tvja.render;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
-public class ModelInstance extends WorldObject {
-	
-	private static final Integer DEFAULT_SHININESS = 3;
-	
+public class ModelInstance extends BaseModel {
+
     private Mesh mesh;
     private Texture tex;
-    private Integer shininess;
 
     public ModelInstance(Mesh mesh, Texture tex) {
+        super("shaders/defaultVS.glsl", "shaders/default-shadowVS.glsl");
         this.mesh = mesh;
         this.tex = tex;
-        shininess = null;
-    }
-    
-    public ModelInstance setShininess(Integer sh) {
-    	shininess = sh;
-    	return this;
-    }
-    
-    public Integer getShininess() {
-    	return shininess == null ? DEFAULT_SHININESS : shininess;
     }
 
     public Mesh getMesh() {
@@ -32,5 +23,17 @@ public class ModelInstance extends WorldObject {
     
     public Texture getTex() {
         return tex;
+    }
+
+    @Override
+    public void render(ShaderProgram shaderProgram, int primitiveType, ViewWorldObject view) {
+        shaderProgram.setUniformMatrix("u_mvp", view.getViewProjection().mul(getTRS()));
+        mesh.render(shaderProgram, primitiveType);
+    }
+
+    @Override
+    public void bind() {
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+        tex.bind(0);
     }
 }

@@ -1,9 +1,6 @@
 package com.tvja.render;
 
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
-import com.tvja.utils.AssetUtils;
 import com.tvja.utils.MathUtils;
 
 import java.util.Optional;
@@ -13,7 +10,6 @@ public class Light extends ViewWorldObject {
     static float farZ = 100;
     protected Vector3 color;
     private Float angle;
-    public ModelInstance model;
 
     private Light(Vector3 position, Vector3 orientation, Vector3 color, Float angle) {
         super(nearZ, farZ, position, orientation);
@@ -35,11 +31,6 @@ public class Light extends ViewWorldObject {
         Vector3 dir = l.getDirection().nor();
         l.setPosition(dir.scl(10));
         l.projection = MathUtils.genOrthogonalProjection(nearZ, farZ, 20, 20);
-        Texture tex = AssetUtils.textureFromFile("models/plain.jpg");
-        Mesh arrow = AssetUtils.meshFromFile("models/arrow.obj");
-        l.model = new ModelInstance(arrow, tex);
-        l.model.setPosition(l.getPosition());
-        l.model.setOrientation(l.getOrientation());
         return l;
     }
 
@@ -52,11 +43,6 @@ public class Light extends ViewWorldObject {
     public static Light newSpot(Vector3 position, Vector3 orientation, Vector3 color, Float angle) {
         Light l = new Light(position, orientation, color, angle);
         l.projection = MathUtils.genPerspectiveProjection(nearZ, farZ, 60, 60);
-        Texture tex = AssetUtils.textureFromFile("models/plain.jpg");
-        Mesh arrow = AssetUtils.meshFromFile("models/arrow.obj");
-        l.model = new ModelInstance(arrow, tex);
-        l.model.setPosition(l.getPosition());
-        l.model.setOrientation(l.getOrientation());
         return l;
     }
 

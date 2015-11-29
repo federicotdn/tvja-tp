@@ -2,16 +2,19 @@ package com.tvja.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.math.Vector3;
 import com.tvja.camera.FPSController;
 import com.tvja.camera.OrthogonalCamera;
 import com.tvja.camera.PerspectiveCamera;
+import com.tvja.render.AnimationModel;
+import com.tvja.render.BaseModel;
 import com.tvja.render.Light;
 import com.tvja.render.ModelInstance;
 import com.tvja.utils.AssetUtils;
-import com.tvja.utils.MathUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,13 +25,15 @@ public class TestGame extends TPGameBase {
 	private Mesh shipMesh;
 	private Mesh cubeMesh;
     private FPSController controller = new FPSController();
+	private AssetManager assetManager =  new AssetManager();
+	private boolean loading;
 
 	private float angle = 0;
 	
 	private Vector3 ambientLight;
 	
 	private List<ModelInstance> ships = new LinkedList<>();
-	
+
 	@Override
 	protected void init() {
 		cam = new PerspectiveCamera();
@@ -59,27 +64,42 @@ public class TestGame extends TPGameBase {
 		ships.add(mi);
 
 		mi = new ModelInstance(cubeMesh, img2);
-		mi.translate(-1000, -1, -1000);
-		mi.scale(2000, 0.5f, 2000);
+		mi.translate(-22.5f, -1, -22.5f);
+		mi.scale(45, 0.5f, 45);
 		mi.setShininess(4);
 		models.add(mi);
-		
-		directionalLights.add(Light.newDirectional(new Vector3(-(float)(Math.PI/4), 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
+
+
+		directionalLights.add(Light.newDirectional(new Vector3(-(float) (3 * Math.PI / 4), 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
 		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(0.2f, 0.2f, 0.2f)));
-		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI/2, 0, 0), new Vector3(1,1,1),
+		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI / 2, 0, 0), new Vector3(1, 1, 1),
 				(float) Math.PI / 7));
 		
 		ambientLight = new Vector3(0.05f, 0.05f, 0.05f);
 		
-		Vector3 ori = new Vector3((float)Math.PI, (float)Math.PI/2, 0);
-		System.out.println(ori);
-		Vector3 dir = MathUtils.toDirection(ori);
-		System.out.println(dir);
-		System.out.println(MathUtils.toOrientation(dir));
+		// move to another scene later
+		loading = true;
+		assetManager.load("models/Dave.g3db", Model.class);
 	}
 
 	@Override
 	protected void update() {
+		if (loading && assetManager.update()) {
+			loading = false;
+			Model model = assetManager.get("models/Dave.g3db", Model.class);
+			Texture tex = AssetUtils.textureFromFile("models/dave.png");
+
+			com.badlogic.gdx.graphics.g3d.ModelInstance instance = new com.badlogic.gdx.graphics.g3d.ModelInstance(model);
+			instance.transform.scale(0.2f, 0.2f, 0.2f);
+			instance.transform.translate(0, -2, -30);
+
+			AnimationModel animationModel = new AnimationModel(instance, tex);
+			animationModel.setShininess(5);
+			animationModel.rotate(0, (float)Math.PI, 0);
+			animatedModels.add(animationModel);
+			models.add(animationModel);
+		}
+
         controller.updatePositionOrientation(cam);
         updateCameraType();
 		
@@ -90,13 +110,14 @@ public class TestGame extends TPGameBase {
 		if (Gdx.input.isKeyPressed(Keys.V)) {
 			spot.setPosition(cam.getPosition());
 			spot.setOrientation(cam.getOrientation());
-			spot.model.setOrientation(spot.getOrientation());
-			spot.model.setPosition(spot.getPosition());
-			spot.model.rotate((float)(-Math.PI/2),0,0);
 		}
 		
-		for (ModelInstance ship : ships) {
+		for (BaseModel ship : ships) {
 			ship.rotate(0, 0, 0.01f);
+		}
+
+		for (AnimationModel aModel : animatedModels) {
+			aModel.getAnimationController().update(Gdx.graphics.getDeltaTime());
 		}
 	}
 
