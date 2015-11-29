@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class Protocol {
 	private static Protocol instance;
+	public static final Integer SERVER_PORT = 3003;
+	public static final Integer CLIENT_PORT = 3004;
 	private Map<Byte, Code> protocolCodes;
 	
 	private Protocol() {
@@ -28,7 +30,7 @@ public class Protocol {
 	}
 	
 	public enum Code {
-		NEW_CLIENT((byte) 0xE1);
+		NEW_CLIENT((byte) 0x61), ACK_CLIENT((byte) 0x62);
 
 		private byte header;
 

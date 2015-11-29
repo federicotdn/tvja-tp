@@ -5,9 +5,12 @@ import java.net.InetAddress;
 public class Player {
 	private InetAddress address;
 	private NetworkObject avatar;
-	
+	private Integer id;
+
 	public Player(InetAddress address) {
 		this.address = address;
+		this.id = hashCode();
+
 	}
 	
 	public InetAddress getAddress() {
@@ -20,6 +23,10 @@ public class Player {
 	
 	public NetworkObject getAvatar() { 
 		return avatar;
+	}
+
+	public Integer getId() {
+		return id;
 	}
 
 	@Override
