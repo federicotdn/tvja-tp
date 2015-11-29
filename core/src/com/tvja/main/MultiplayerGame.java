@@ -1,6 +1,7 @@
 package com.tvja.main;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
@@ -16,7 +17,6 @@ import com.tvja.net.ServerPacket;
 import com.tvja.render.BaseModel;
 import com.tvja.render.Light;
 import com.tvja.render.ModelInstance;
-import com.tvja.render.WorldObject;
 import com.tvja.utils.AssetUtils;
 
 import java.io.*;
@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class MultiplayerGame extends TPGameBase {
     private static final String SERVER_ADDRESS = "localhost";
-    private static final int READBUFFER_LEN = 1024;
+    private static final int READBUFFER_LEN = 4096;
     private DatagramSocket socket;
     private ByteArrayOutputStream bos;
     private ByteArrayInputStream bis;
@@ -51,7 +51,7 @@ public class MultiplayerGame extends TPGameBase {
     protected void init() {
         ambientLight = new Vector3(0.05f, 0.05f, 0.05f);
         modelInstances = new HashMap<NetworkObject, BaseModel>();
-        
+        	
 		img = AssetUtils.textureFromFile("models/ship.png");
 		img2 = AssetUtils.textureFromFile("models/plain.jpg");
 
@@ -59,10 +59,16 @@ public class MultiplayerGame extends TPGameBase {
 		cubeMesh = AssetUtils.meshFromFile("models/cube-textures.obj");
 		
 		directionalLights.add(Light.newDirectional(new Vector3(-(float) (3 * Math.PI / 4), 3.5199971f, 0), new Vector3(1f, 0.99f, 0.8f), 0.75f));
+		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI / 2, 0, 0), new Vector3(1, 1, 1),
+				(float) Math.PI / 7, 0.8f));
+		
+		ModelInstance mi = new ModelInstance(cubeMesh, img2);
+		mi.translate(-22.5f, -1, -22.5f);
+		mi.scale(45, 0.5f, 45);
+		mi.setShininess(4);
+		models.add(mi);
 		
 		cam = new PerspectiveCamera();
-
-        Gdx.input.setCursorCatched(true);
 
         try {
             socket = new DatagramSocket(new InetSocketAddress(SERVER_ADDRESS, Protocol.CLIENT_PORT));
@@ -160,6 +166,12 @@ public class MultiplayerGame extends TPGameBase {
         }
         
         controller.updatePositionOrientation(cam);
+		Light spot = spotLights.get(0);
+		
+		if (Gdx.input.isKeyPressed(Keys.V)) {
+			spot.setPosition(cam.getPosition());
+			spot.setOrientation(cam.getOrientation());
+		}
     }
 
     @Override

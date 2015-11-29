@@ -135,6 +135,13 @@ public class ServerApp extends ApplicationAdapter {
                     break;
             }
         }
+        
+        serverLogic();
+        updateClients();
+    }
+    
+    public void serverLogic() {
+    	
     }
 
     private void addNewClient(DatagramPacket packet) {
