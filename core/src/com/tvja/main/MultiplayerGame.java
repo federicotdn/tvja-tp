@@ -2,7 +2,12 @@ package com.tvja.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.tvja.net.ClientPacket;
 import com.tvja.net.Protocol;
+import com.tvja.net.ServerPacket;
 
 import java.io.*;
 import java.net.*;
@@ -12,12 +17,14 @@ public class MultiplayerGame extends TPGameBase {
     private static final int READBUFFER_LEN = 256;
     private DatagramSocket socket;
     private ByteArrayOutputStream bos;
-    private ObjectOutput objectOut;
     private ByteArrayInputStream bis;
-    private ObjectInput objectIn;
     private Vector3 ambientLight;
     private byte[] readBuffer;
     private Integer id;
+
+    private Kryo kryo;
+    private Output out;
+    private Input in;
 
     @Override
     protected void init() {
@@ -33,23 +40,18 @@ public class MultiplayerGame extends TPGameBase {
         }
 
         bos = new ByteArrayOutputStream();
-        try {
-            objectOut = new ObjectOutputStream(bos);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        bos.reset();
-        try {
-            objectOut.writeByte(Protocol.Code.NEW_CLIENT.getHeader());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        try {
-            bos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        bos.reset();
+        kryo = new Kryo();
+        kryo.register(ServerPacket.class);
+        kryo.register(ClientPacket.class);
+
+        out = new Output(bos);
+
+        ClientPacket cp = new ClientPacket(Protocol.Code.NEW_CLIENT);
+        kryo.writeObject(out, cp);
+        out.flush();
+
         byte[] data = bos.toByteArray();
         readBuffer = new byte[READBUFFER_LEN];
         while (true) {
@@ -75,16 +77,12 @@ public class MultiplayerGame extends TPGameBase {
 
             if (received) {
                 bis = new ByteArrayInputStream(readBuffer);
-                try {
-                    objectIn = new ObjectInputStream(bis);
-                    Protocol.Code c = Protocol.parseHeader(objectIn.readByte());
-                    if (c == Protocol.Code.ACK_CLIENT) {
-                        id = objectIn.readInt();
-                        System.out.println("Connected with id: " + id);
-                        break;
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                in = new Input(bis);
+                ServerPacket sp = kryo.readObject(in, ServerPacket.class);
+                if (sp.getCode() == Protocol.Code.ACK_CLIENT) {
+                    id = sp.getId();
+                    System.out.println("Connected with id: " + id);
+                    break;
                 }
             }
         }

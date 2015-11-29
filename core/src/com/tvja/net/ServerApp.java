@@ -8,24 +8,31 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ServerApp extends ApplicationAdapter {
     private static final int READBUFFER_LEN = 256;
     DatagramSocket socket;
     byte[] readBuffer;
     ByteArrayOutputStream bos;
-    ObjectOutput objectOut;
-    private ByteArrayInputStream bis;
-    private ObjectInput objectIn;
     List<NetworkObject> objects;
     Set<Player> players;
+    private ByteArrayInputStream bis;
     private Stage stage;
     private Table table;
     private TextArea console;
+    private Kryo kryo;
+    private Output out;
+    private Input in;
 
     @Override
     public void create() {
@@ -55,14 +62,14 @@ public class ServerApp extends ApplicationAdapter {
 
         bos = new ByteArrayOutputStream();
 
-        try {
-            objectOut = new ObjectOutputStream(bos);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
         objects = new ArrayList<NetworkObject>();
         players = new HashSet<Player>();
+
+        kryo = new Kryo();
+        kryo.register(ServerPacket.class);
+        kryo.register(ClientPacket.class);
+
+        out = new Output(bos);
     }
 
     @Override
@@ -95,16 +102,10 @@ public class ServerApp extends ApplicationAdapter {
         }
 
         if (received) {
-            bis = new ByteArrayInputStream(Arrays.copyOfRange(readBuffer, 1, readBuffer.length));
-            Protocol.Code c;
-            try {
-                objectIn = new ObjectInputStream(bis);
-                c = Protocol.parseHeader(objectIn.readByte());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            switch (c) {
+            bis = new ByteArrayInputStream(readBuffer);
+            in = new Input(bis);
+            ClientPacket cp = kryo.readObject(in, ClientPacket.class);
+            switch (cp.getCode()) {
                 case NEW_CLIENT:
                     addNewClient(packet);
                     break;
@@ -126,9 +127,9 @@ public class ServerApp extends ApplicationAdapter {
 
         bos.reset();
         try {
-            objectOut.writeByte(Protocol.Code.ACK_CLIENT.getHeader());
-            objectOut.writeInt(player.getId());
-            objectOut.flush();
+            ServerPacket sp = new ServerPacket(Protocol.Code.ACK_CLIENT, player.getId());
+            kryo.writeObject(out, sp);
+            out.flush();
             byte[] data = bos.toByteArray();
             DatagramPacket outPacket = new DatagramPacket(data, data.length, player.getAddress(), Protocol.CLIENT_PORT);
             socket.send(outPacket);
@@ -142,11 +143,6 @@ public class ServerApp extends ApplicationAdapter {
             for (Player player : players) {
                 bos.reset();
 
-                try {
-                    objectOut.writeObject(obj);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
 
                 byte[] data = bos.toByteArray();
             }
