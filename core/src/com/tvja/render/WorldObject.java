@@ -43,6 +43,12 @@ public abstract class WorldObject extends SpatialObject {
 	public WorldObject(Vector3 pos, Vector3 ori) {
 		this(pos, ori, new Vector3(1, 1, 1));
 	}
+	
+	public void updateWith(NetworkObject no) {
+		setPosition(no.getPosition());
+		setOrientation(no.getOrientation());
+		setScale(no.getScale());
+	}
 
 	@Override
 	public void setPosition(Vector3 pos) {

@@ -11,21 +11,26 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.tvja.render.ModelInstance;
 
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 public class ServerApp extends ApplicationAdapter {
     private static final int READBUFFER_LEN = 256;
-    DatagramSocket socket;
+    private DatagramSocket socket;
     byte[] readBuffer;
-    ByteArrayOutputStream bos;
-    List<NetworkObject> objects;
-    Set<Player> players;
+    private ByteArrayOutputStream bos;
+    private List<NetworkObject> objects;
+    
+    private Set<Player> players;
+    private List<Player> playerList;
+    
     private ByteArrayInputStream bis;
     private Stage stage;
     private Table table;
@@ -64,12 +69,31 @@ public class ServerApp extends ApplicationAdapter {
 
         objects = new ArrayList<NetworkObject>();
         players = new HashSet<Player>();
+        playerList = new ArrayList<Player>();
 
         kryo = new Kryo();
         kryo.register(ServerPacket.class);
         kryo.register(ClientPacket.class);
+        kryo.register(LinkedList.class);
+        kryo.register(ArrayList.class);
 
         out = new Output(bos);
+        
+        //TEST SCENARIO
+		NetworkObject no = new NetworkObject();
+		no.genID();
+		no.translate(2, 0.2f, 0);
+		objects.add(no);
+		
+		no = new NetworkObject();
+		no.genID();
+		no.translate(4, 0.5f, 0);
+		objects.add(no);
+		
+		no = new NetworkObject();
+		no.genID();
+		no.translate(6, 1f, 0);
+		objects.add(no);
     }
 
     @Override
@@ -121,33 +145,38 @@ public class ServerApp extends ApplicationAdapter {
         if (!players.contains(player)) {
             log("Player added to set.");
             players.add(player);
+            playerList.add(player);
             NetworkObject obj = new NetworkObject();
+            obj.genID();
             player.setAvatar(obj);
         }
 
-        bos.reset();
+        
+        ServerPacket sp = new ServerPacket(Protocol.Code.ACK_CLIENT, player.getId());
+        sendServerPacket(player, sp);
+    }
+
+	public void updateClients() {
+		ServerPacket sp = new ServerPacket(Protocol.Code.NET_OBJECTS, null, objects);
+
+		for (Player player : players) {
+			sp.setClientAvatar(player.getAvatar().getID());
+			sendServerPacket(player, sp);
+		}
+	}
+	
+	private void sendServerPacket(Player player, ServerPacket sp) {
+		bos.reset();
+        kryo.writeObject(out, sp);
+        out.flush();
+        byte[] data = bos.toByteArray();
+        DatagramPacket outPacket = new DatagramPacket(data, data.length, player.getAddress(), Protocol.CLIENT_PORT);
         try {
-            ServerPacket sp = new ServerPacket(Protocol.Code.ACK_CLIENT, player.getId());
-            kryo.writeObject(out, sp);
-            out.flush();
-            byte[] data = bos.toByteArray();
-            DatagramPacket outPacket = new DatagramPacket(data, data.length, player.getAddress(), Protocol.CLIENT_PORT);
-            socket.send(outPacket);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void updateClients() {
-        for (NetworkObject obj : objects) {
-            for (Player player : players) {
-                bos.reset();
-
-
-                byte[] data = bos.toByteArray();
-            }
-        }
-    }
+			socket.send(outPacket);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
     @Override
     public void dispose() {

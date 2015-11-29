@@ -12,14 +12,10 @@ public class NetworkObject extends SpatialObject implements Serializable {
     private int ID;
 
     public NetworkObject() {
-    	this.ID = IDGen++;
     }
     
-    public NetworkObject(WorldObject wo) {
-    	this();
-        setPosition(wo.getPosition());
-        setOrientation(wo.getOrientation());
-        setScale(wo.getScale());
+    public void genID() {
+    	this.ID = IDGen++;
     }
     
     public int getID() {

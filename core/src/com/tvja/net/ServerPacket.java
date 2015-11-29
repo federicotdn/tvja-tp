@@ -7,23 +7,32 @@ import java.util.List;
  */
 public class ServerPacket {
     private Protocol.Code code;
-    private Integer id;
+    private Integer clientId;
     private List<NetworkObject> networkObjects;
+    private Integer clientAvatar;
 
-    public ServerPacket(Protocol.Code code, Integer id, List<NetworkObject> networkObjects) {
+    public ServerPacket(Protocol.Code code, Integer clientId, List<NetworkObject> networkObjects) {
         this.code = code;
-        this.id = id;
+        this.clientId = clientId;
         this.networkObjects = networkObjects;
     }
 
-    public ServerPacket() {
+    public Integer getClientAvatar() {
+		return clientAvatar;
+	}
+
+	public void setClientAvatar(Integer clientAvatar) {
+		this.clientAvatar = clientAvatar;
+	}
+
+	public ServerPacket() {
 
     }
 
     public ServerPacket(Protocol.Code code, Integer id) {
 
         this.code = code;
-        this.id = id;
+        this.clientId = id;
     }
 
     public Protocol.Code getCode() {
@@ -31,7 +40,7 @@ public class ServerPacket {
     }
 
     public Integer getId() {
-        return id;
+        return clientId;
     }
 
     public List<NetworkObject> getNetworkObjects() {
