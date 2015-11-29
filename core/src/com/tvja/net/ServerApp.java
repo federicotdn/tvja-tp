@@ -1,11 +1,19 @@
 package com.tvja.net;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -25,6 +33,12 @@ public class ServerApp extends ApplicationAdapter {
 	private TextArea console;
 	DatagramSocket socket;
 	byte[] readBuffer;
+	
+	ByteArrayOutputStream bos;
+	ObjectOutput objectOut;
+	
+	List<NetworkObject> objects;
+	Set<Player> players;
 	
 	@Override
 	public void create() {
@@ -51,6 +65,16 @@ public class ServerApp extends ApplicationAdapter {
 		}
 		
 		readBuffer = new byte[READBUFFER_LEN];
+		
+		bos = new ByteArrayOutputStream();
+		try {
+			objectOut = new ObjectOutputStream(bos);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		objects = new ArrayList<NetworkObject>();
+		players = new HashSet<Player>();
 	}
 	
 	@Override
@@ -83,7 +107,7 @@ public class ServerApp extends ApplicationAdapter {
 		}
 		
 		if (received) {
-			Protocol.Code c = Protocol.parseHeader(readBuffer[0]);
+			Protocol.Code c = Protocol.Code.NEW_CLIENT;//Protocol.parseHeader(readBuffer[0]);
 			switch (c) {
 			case NEW_CLIENT:
 				addNewClient(packet);
@@ -93,12 +117,41 @@ public class ServerApp extends ApplicationAdapter {
 	}
 	
 	private void addNewClient(DatagramPacket packet) {
+		InetAddress ad = packet.getAddress();
+		log("New client from: " + ad.toString());
 		
+		Player player = new Player(ad);
+		if (!players.contains(player)) {
+			log("Player added to set.");
+			players.add(player);
+			NetworkObject obj = new NetworkObject();
+			player.setAvatar(obj);
+		}
+	}
+	
+	public void updateClients() {
+		for (NetworkObject obj : objects) {
+			for (Player player : players) {
+				bos.reset();
+				
+				try {
+					objectOut.writeObject(obj);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+				
+				byte[] data = bos.toByteArray();
+			}
+ 		}
 	}
 	
 	@Override
 	public void dispose() {
 		stage.dispose();
+	}
+	
+	private void log(String s) {
+		console.appendText(s + "\n");
 	}
 	
     private void checkExit() {
