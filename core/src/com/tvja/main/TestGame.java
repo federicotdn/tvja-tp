@@ -70,10 +70,10 @@ public class TestGame extends TPGameBase {
 		models.add(mi);
 
 
-		directionalLights.add(Light.newDirectional(new Vector3(-(float) (3 * Math.PI / 4), 3.5199971f, 0), new Vector3(0.5f, 0.5f, 0.5f)));
-		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(0.2f, 0.2f, 0.2f)));
+		directionalLights.add(Light.newDirectional(new Vector3(-(float) (3 * Math.PI / 4), 3.5199971f, 0), new Vector3(1f, 0.99f, 0.8f), 0.75f));
+		pointLights.add(Light.newPoint(new Vector3(1, 5, 1), new Vector3(0.2f, 0.2f, 0.2f), 0.8f));
 		spotLights.add(Light.newSpot(new Vector3(0, 10, 0), new Vector3((float) -Math.PI / 2, 0, 0), new Vector3(1, 1, 1),
-				(float) Math.PI / 7));
+				(float) Math.PI / 7, 0.8f));
 		
 		ambientLight = new Vector3(0.05f, 0.05f, 0.05f);
 		
