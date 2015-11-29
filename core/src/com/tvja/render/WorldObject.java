@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.tvja.utils.MathUtils;
 
 /*
- * "WorldObject changes everything.  It just works. Seamlessly." -Steve Jobs, 2014
+ * "WorldObject changes everything. It just works. Seamlessly." -Steve Jobs, 2014
  */
 public abstract class WorldObject {
 	private Vector3 position;

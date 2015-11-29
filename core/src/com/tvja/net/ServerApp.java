@@ -18,7 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 
 public class ServerApp extends ApplicationAdapter {
 	private static final int PORT = 3003;
-	private static final int READBUFFER_LEN = 512;
+	private static final int READBUFFER_LEN = 256;
 	
 	private Stage stage;
 	private Table table;
@@ -69,14 +69,31 @@ public class ServerApp extends ApplicationAdapter {
 	}
 	
 	private void update() {
+		readBuffer[0] = 0;
+		boolean received = false;
+		
 		DatagramPacket packet = new DatagramPacket(readBuffer, READBUFFER_LEN);
 		try {
 			socket.receive(packet);
+			received = true;
 		} catch (SocketTimeoutException e) {
-			
+			/* DO NOTHING */
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		
+		if (received) {
+			Protocol.Code c = Protocol.parseHeader(readBuffer[0]);
+			switch (c) {
+			case NEW_CLIENT:
+				addNewClient(packet);
+				break;
+			}			
+		}
+	}
+	
+	private void addNewClient(DatagramPacket packet) {
+		
 	}
 	
 	@Override
