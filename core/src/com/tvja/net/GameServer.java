@@ -81,7 +81,7 @@ public class GameServer {
     	outChannel.register(selector, SelectionKey.OP_READ);
     	
     	while (true) {
-    		selector.select(2000);
+    		selector.select(500);
     		Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
     		while (selectedKeys.hasNext()) {
     			SelectionKey key = (SelectionKey) selectedKeys.next();
@@ -157,17 +157,12 @@ public class GameServer {
     	DatagramChannel chan = (DatagramChannel) key.channel();
     	KeyData kd = (KeyData) key.attachment();
     	int written = chan.send(kd.info, kd.address);
-    	if (written > 0 && written < 260)
-    		System.out.println("written: " + Integer.valueOf(written).toString()); 
     	key.interestOps(0);
     }
 
-    private void addNewClient(InetSocketAddress ad) throws IOException {
-    	boolean newPlayer = false;
-    	
+    private void addNewClient(InetSocketAddress ad) throws IOException {	
         Player player;
         if (!players.containsKey(ad)) {
-        	newPlayer = true;
             log("New client from: " + ad.toString());
             log("Client hash: " + ad.hashCode());
             player = new Player(ad);
@@ -187,11 +182,7 @@ public class GameServer {
         }
 
         ServerPacket sp = new ServerPacket(Protocol.Code.ACK_CLIENT, player.getId());
-       // System.out.println(player.getChannel().keyFor(selector).interestOps());
-        if (player.getChannel().keyFor(selector).interestOps() == 0 || newPlayer) {
-        	//System.out.println("send client packet");
-        	sendServerPacket(player, sp);        	
-        }
+        sendServerPacket(player, sp, true);
     }
 
     private void updateClients() throws IOException {
@@ -199,15 +190,19 @@ public class GameServer {
 
         for (Player player : players.values()) {
             sp.setClientAvatar(player.getAvatar().getID());
-            if (player.getChannel().keyFor(selector).interestOps() == 0) {
-            	sendServerPacket(player, sp);            	
+            
+            if (player.getChannel().keyFor(selector).interestOps() != 0) {
+            	KeyData kd = (KeyData) player.getChannel().keyFor(selector).attachment();
+            	if (!kd.isIDInfo) {
+            		kd.info = packetToBuffer(sp);
+            	}      	
+            } else {
+            	sendServerPacket(player, sp, false);
             }
         }
     }
-
-    private void sendServerPacket(Player player, ServerPacket sp) throws IOException {
-    	SelectionKey clientKey = player.getChannel().keyFor(selector);
-
+    
+    private ByteBuffer packetToBuffer(ServerPacket sp) {
         bos.reset();
         kryo.writeObject(out, sp);
         out.flush();
@@ -215,12 +210,18 @@ public class GameServer {
         ByteBuffer buf = ByteBuffer.wrap(data, 0, data.length);
         buf.position(0);
         buf.mark();
+        return buf;
+    }
+
+    private void sendServerPacket(Player player, ServerPacket sp, boolean isIDInfo) throws IOException {
+    	SelectionKey clientKey = player.getChannel().keyFor(selector);
         
         InetSocketAddress isa = player.getAddress();
         InetSocketAddress isaWithPort = new InetSocketAddress(isa.getHostName(), Protocol.CLIENT_PORT);
         KeyData kd = new KeyData();
         kd.address = isaWithPort;
-        kd.info = buf;
+        kd.info = packetToBuffer(sp);
+        kd.isIDInfo = isIDInfo;
         
         clientKey.attach(kd);
         clientKey.interestOps(SelectionKey.OP_WRITE);
@@ -233,5 +234,6 @@ public class GameServer {
     private class KeyData {
     	public ByteBuffer info;
     	public InetSocketAddress address;
+    	public boolean isIDInfo;
     }
 }

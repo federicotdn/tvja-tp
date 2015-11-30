@@ -72,7 +72,7 @@ public class MultiplayerGame extends TPGameBase {
 
         try {
             socket = new DatagramSocket(new InetSocketAddress("0.0.0.0", Protocol.CLIENT_PORT));
-            socket.setSoTimeout(1);
+            socket.setSoTimeout(15);
         } catch (SocketException e) {
             e.printStackTrace();
         }
