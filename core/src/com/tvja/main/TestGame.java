@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.tvja.camera.FPSController;
 import com.tvja.camera.OrthogonalCamera;
 import com.tvja.camera.PerspectiveCamera;
+import com.tvja.camera.PlayerInput;
 import com.tvja.render.AnimationModel;
 import com.tvja.render.BaseModel;
 import com.tvja.render.Light;
@@ -27,6 +28,7 @@ public class TestGame extends TPGameBase {
     private FPSController controller = new FPSController();
 	private AssetManager assetManager =  new AssetManager();
 	private boolean loading;
+	private PlayerInput input;
 
 	private float angle = 0;
 	
@@ -82,6 +84,8 @@ public class TestGame extends TPGameBase {
 		assetManager.load("models/Dave.g3db", Model.class);
 
 		groupModels();
+
+		input = new PlayerInput();
 	}
 
 	@Override
@@ -103,7 +107,8 @@ public class TestGame extends TPGameBase {
 			groupModels();
 		}
 
-        controller.updatePositionOrientation(cam);
+		input.grabInputs();
+        controller.updatePositionOrientation(cam, input);
         updateCameraType();
 		
 		updateAngle();

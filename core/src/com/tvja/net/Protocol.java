@@ -6,6 +6,6 @@ public class Protocol {
 	public static final Integer CLIENT_PORT = 3004;
 
 	public enum Code {
-		NEW_CLIENT, ACK_CLIENT, NET_OBJECTS;
+		NEW_CLIENT, ACK_CLIENT, NET_OBJECTS, INPUT;
 	}
 }

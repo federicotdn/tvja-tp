@@ -8,18 +8,17 @@ import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.tvja.camera.FPSController;
 import com.tvja.camera.PerspectiveCamera;
-import com.tvja.net.ClientPacket;
-import com.tvja.net.NetworkObject;
-import com.tvja.net.Protocol;
-import com.tvja.net.ServerPacket;
+import com.tvja.camera.PlayerInput;
+import com.tvja.net.*;
 import com.tvja.render.BaseModel;
 import com.tvja.render.Light;
 import com.tvja.render.ModelInstance;
 import com.tvja.utils.AssetUtils;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,10 +42,11 @@ public class MultiplayerGame extends TPGameBase {
     private Kryo kryo;
     private Output out;
     private Input in;
+
+    private PlayerInput input;
     
     Map<NetworkObject, BaseModel> modelInstances;
-    private FPSController controller = new FPSController();
-    
+
     @Override
     protected void init() {
         ambientLight = new Vector3(0.05f, 0.05f, 0.05f);
@@ -85,6 +85,7 @@ public class MultiplayerGame extends TPGameBase {
         kryo.register(ClientPacket.class);
         kryo.register(LinkedList.class);
         kryo.register(ArrayList.class);
+        kryo.register(PlayerInput.class);
 
         out = new Output(bos);
 
@@ -126,6 +127,8 @@ public class MultiplayerGame extends TPGameBase {
                 }
             }
         }
+
+        input = new PlayerInput();
     }
 
     @Override
@@ -146,26 +149,44 @@ public class MultiplayerGame extends TPGameBase {
             bis = new ByteArrayInputStream(readBuffer);
             in = new Input(bis);
             ServerPacket sp = kryo.readObject(in, ServerPacket.class);
-            
+
             if (sp.getCode() == Protocol.Code.NET_OBJECTS) {
             	for (NetworkObject no : sp.getNetworkObjects()) {
-            		if (no.getID() != sp.getClientAvatar()) {
+                    if (no.getID() != sp.getClientAvatar()) {
             			if (!modelInstances.containsKey(no)) {
             				ModelInstance mi = new ModelInstance(shipMesh, img);
             				modelInstances.put(no, mi);
             				models.add(mi);
             				groupModels();
             			}
-            			
-            			BaseModel bm = modelInstances.get(no);
-            			bm.updateWith(no);
-            		}
+
+                        BaseModel bm = modelInstances.get(no);
+                        bm.updateWith(no);
+            		} else {
+                        cam.updateWith(no);
+                    }
             	}
             }
             
         }
-        
-        controller.updatePositionOrientation(cam);
+
+        input.grabInputs();
+
+        bos.reset();
+        ClientPacket cp = new ClientPacket(Protocol.Code.INPUT, input);
+        kryo.writeObject(out, cp);
+        out.flush();
+
+        byte[] data = bos.toByteArray();
+
+        DatagramPacket outPakcet = new DatagramPacket(data, data.length,
+                new InetSocketAddress(SERVER_ADDRESS, Protocol.SERVER_PORT));
+        try {
+            socket.send(outPakcet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 		Light spot = spotLights.get(0);
 		
 		if (Gdx.input.isKeyPressed(Keys.V)) {

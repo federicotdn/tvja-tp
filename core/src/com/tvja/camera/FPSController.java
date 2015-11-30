@@ -1,9 +1,7 @@
 package com.tvja.camera;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
-import com.tvja.render.WorldObject;
+import com.tvja.render.SpatialObject;
 
 public class FPSController {
 
@@ -36,34 +34,34 @@ public class FPSController {
         return right.nor();
     }
 
-    public void updatePositionOrientation(WorldObject wo) {
-        Vector3 ori = wo.getOrientation();
-        Vector3 pos = wo.getPosition();
+    public void updatePositionOrientation(SpatialObject so, PlayerInput input) {
+        Vector3 ori = so.getOrientation();
+        Vector3 pos = so.getPosition();
 
-        updateOrientation(ori);
-        updatePosition(pos, ori);
+        updateOrientation(ori, input);
+        updatePosition(pos, ori, input);
 
-        wo.setPosition(pos);
-        wo.setOrientation(ori);
+        so.setPosition(pos);
+        so.setOrientation(ori);
     }
 
-    private void updatePosition(Vector3 position, Vector3 orientation) {
+    private void updatePosition(Vector3 position, Vector3 orientation, PlayerInput input) {
         float speedAux = speed;
 
-        if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
+        if (input.isShift()) {
             speedAux *= 5;
         }
 
-        if (Gdx.input.isKeyPressed(Keys.W)) {
+        if (input.isW()) {
             position.add(getForward(orientation).scl(speedAux));
-        } else if (Gdx.input.isKeyPressed(Keys.S)) {
+        } else if (input.isS()) {
             position.add(getForward(orientation).scl(-speedAux));
         }
 
 
-        if (Gdx.input.isKeyPressed(Keys.D)) {
+        if (input.isD()) {
             position.add(getRight(orientation).scl(-speedAux));
-        } else if (Gdx.input.isKeyPressed(Keys.A)) {
+        } else if (input.isA()) {
             position.add(getRight(orientation).scl(speedAux));
         }
     }
@@ -82,9 +80,9 @@ public class FPSController {
             orientation.x = -maxX;
     }
 
-    private void updateOrientation(Vector3 orientation) {
-        int dx = Gdx.input.getDeltaX();
-        int dy = Gdx.input.getDeltaY();
+    private void updateOrientation(Vector3 orientation, PlayerInput input) {
+        int dx = input.getDeltaX();
+        int dy = input.getDeltaY();
 
         orientation.y += ((float) dx) * -sensibility;
         orientation.x += ((float) dy) * -sensibility;
