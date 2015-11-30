@@ -1,14 +1,5 @@
 package com.tvja.net;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.FPSLogger;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -21,7 +12,7 @@ import java.io.IOException;
 import java.net.*;
 import java.util.*;
 
-public class ServerApp extends ApplicationAdapter {
+public class GameServer {
     private static final int READBUFFER_LEN = 256;
     byte[] readBuffer;
     private DatagramSocket socket;
@@ -31,33 +22,15 @@ public class ServerApp extends ApplicationAdapter {
     private Map<InetAddress, Player> players;
 
     private ByteArrayInputStream bis;
-    private Stage stage;
-    private Table table;
-    private TextArea console;
     private Kryo kryo;
     private Output out;
     private Input in;
-    
-    FPSLogger s;
 
     private FPSController fpsController;
+    
+    private boolean changed = true;
 
-    @Override
     public void create() {
-        stage = new Stage();
-        Skin skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
-
-        Gdx.input.setInputProcessor(stage);
-
-        table = new Table();
-        table.setFillParent(true);
-        stage.addActor(table);
-
-        console = new TextArea("", skin);
-        console.setFillParent(true);
-        console.setDisabled(true);
-        table.addActor(console);
-
         try {
             socket = new DatagramSocket(new InetSocketAddress("0.0.0.0", Protocol.SERVER_PORT));
             socket.setSoTimeout(1);
@@ -99,28 +72,12 @@ public class ServerApp extends ApplicationAdapter {
         objects.add(no);
 
         fpsController = new FPSController();
-        s = new FPSLogger();
     }
 
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
-    }
-
-    @Override
-    public void render() {
-        checkExit();
-        update();
-        s.log();
-
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(Gdx.graphics.getDeltaTime());
-        stage.draw();
-    }
-
-    private void update() {
+    public void update() {
         readBuffer[0] = 0;
         boolean received = false;
+        changed = false;
 
         DatagramPacket packet = new DatagramPacket(readBuffer, READBUFFER_LEN);
         try {
@@ -138,16 +95,21 @@ public class ServerApp extends ApplicationAdapter {
             ClientPacket cp = kryo.readObject(in, ClientPacket.class);
             switch (cp.getCode()) {
                 case NEW_CLIENT:
+                	changed = true;
                     addNewClient(packet);
                     break;
                 case INPUT:
+                	changed = true;
                     moveClient(packet.getAddress(), cp);
                     break;
             }
         }
 
         serverLogic();
-        updateClients();
+        
+        if (changed) {
+        	updateClients();        	
+        }
     }
 
     private void moveClient(InetAddress address, ClientPacket cp) {
@@ -159,7 +121,7 @@ public class ServerApp extends ApplicationAdapter {
         fpsController.updatePositionOrientation(player.getAvatar(), cp.getPlayerInput());
     }
 
-    public void serverLogic() {
+    private void serverLogic() {
 
     }
 
@@ -184,7 +146,7 @@ public class ServerApp extends ApplicationAdapter {
         sendServerPacket(player, sp);
     }
 
-    public void updateClients() {
+    private void updateClients() {
         ServerPacket sp = new ServerPacket(Protocol.Code.NET_OBJECTS, null, objects);
 
         for (Player player : players.values()) {
@@ -206,18 +168,7 @@ public class ServerApp extends ApplicationAdapter {
         }
     }
 
-    @Override
-    public void dispose() {
-        stage.dispose();
-    }
-
     private void log(String s) {
-        console.appendText(s + "\n");
-    }
-
-    private void checkExit() {
-        if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
-            Gdx.app.exit();
-        }
+        System.out.println(s);
     }
 }
