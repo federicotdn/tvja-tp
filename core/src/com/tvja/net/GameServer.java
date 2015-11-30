@@ -11,7 +11,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -20,7 +19,6 @@ import java.util.*;
 public class GameServer {
     private static final int READBUFFER_LEN = 256;
     private ByteBuffer readBuffer;
-    private DatagramSocket socket;
     private ByteArrayOutputStream bos;
     private List<NetworkObject> objects;
 
@@ -32,6 +30,9 @@ public class GameServer {
     private Input in;
 
     private FPSController fpsController;
+    
+    private Selector selector;
+    private DatagramChannel outChannel;
     
     private boolean changed = true;
 
@@ -72,16 +73,16 @@ public class GameServer {
     }
     
     public void start() throws IOException {
-    	Selector selector = Selector.open();
-    	DatagramChannel channel = DatagramChannel.open();
+    	selector = Selector.open();
+    	outChannel = DatagramChannel.open();
     	InetSocketAddress isa = new InetSocketAddress("0.0.0.0", Protocol.SERVER_PORT);
-    	channel.socket().bind(isa);
-    	channel.configureBlocking(false);
-    	channel.register(selector, SelectionKey.OP_READ);
+    	outChannel.socket().bind(isa);
+    	outChannel.configureBlocking(false);
+    	outChannel.register(selector, SelectionKey.OP_READ);
     	
     	while (true) {
-    		selector.select(500);
-    		Iterator selectedKeys = selector.selectedKeys().iterator();
+    		selector.select(2000);
+    		Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
     		while (selectedKeys.hasNext()) {
     			SelectionKey key = (SelectionKey) selectedKeys.next();
     			selectedKeys.remove();
@@ -91,9 +92,9 @@ public class GameServer {
     			}
     			
     			if (key.isReadable()) {
-    				boolean changed = read(selector, key);
+    				boolean changed = read(key);
     				if (changed) {
-    					updateClients(selector);
+    					updateClients();
     				}
     				key.interestOps(SelectionKey.OP_READ);
     			} else if (key.isWritable()) {
@@ -105,7 +106,7 @@ public class GameServer {
     	}
     }
 
-    public boolean read(Selector selector, SelectionKey key) throws IOException {
+    public boolean read(SelectionKey key) throws IOException {
     	DatagramChannel chan = (DatagramChannel) key.channel();
         boolean received = false;	
         changed = false;
@@ -125,7 +126,7 @@ public class GameServer {
             switch (cp.getCode()) {
                 case NEW_CLIENT:
                 	changed = true;
-                	addNewClient(selector, fullAddress);
+                	addNewClient(fullAddress);
                     break;
                 case INPUT:
                 	changed = true;
@@ -156,15 +157,19 @@ public class GameServer {
     	DatagramChannel chan = (DatagramChannel) key.channel();
     	KeyData kd = (KeyData) key.attachment();
     	int written = chan.send(kd.info, kd.address);
-    	key.cancel();
+    	if (written > 0 && written < 260)
+    		System.out.println("written: " + Integer.valueOf(written).toString()); 
+    	key.interestOps(0);
     }
 
-    private void addNewClient(Selector selector, InetSocketAddress ad) throws IOException {
-        log("New client from: " + ad.toString());
-        log("Client hash: " + ad.hashCode());
-
+    private void addNewClient(InetSocketAddress ad) throws IOException {
+    	boolean newPlayer = false;
+    	
         Player player;
         if (!players.containsKey(ad)) {
+        	newPlayer = true;
+            log("New client from: " + ad.toString());
+            log("Client hash: " + ad.hashCode());
             player = new Player(ad);
             log("Player added to set.");
             players.put(player.getAddress(), player);
@@ -172,28 +177,37 @@ public class GameServer {
             obj.genID();
             player.setAvatar(obj);
             objects.add(obj);
+            
+            DatagramChannel channel = DatagramChannel.open();
+            channel.configureBlocking(false);
+            channel.register(selector, SelectionKey.OP_WRITE);
+            player.setChannel(channel);
         } else {
             player = players.get(ad);
         }
 
         ServerPacket sp = new ServerPacket(Protocol.Code.ACK_CLIENT, player.getId());
-        sendServerPacket(selector, player, sp);
+       // System.out.println(player.getChannel().keyFor(selector).interestOps());
+        if (player.getChannel().keyFor(selector).interestOps() == 0 || newPlayer) {
+        	//System.out.println("send client packet");
+        	sendServerPacket(player, sp);        	
+        }
     }
 
-    private void updateClients(Selector selector) throws IOException {
+    private void updateClients() throws IOException {
         ServerPacket sp = new ServerPacket(Protocol.Code.NET_OBJECTS, null, objects);
 
         for (Player player : players.values()) {
             sp.setClientAvatar(player.getAvatar().getID());
-            sendServerPacket(selector, player, sp);
+            if (player.getChannel().keyFor(selector).interestOps() == 0) {
+            	sendServerPacket(player, sp);            	
+            }
         }
     }
 
-    private void sendServerPacket(Selector selector, Player player, ServerPacket sp) throws IOException {
-    	DatagramChannel channel = DatagramChannel.open();
-    	channel.configureBlocking(false);
-    	SelectionKey clientKey = channel.register(selector, SelectionKey.OP_WRITE);
-    	
+    private void sendServerPacket(Player player, ServerPacket sp) throws IOException {
+    	SelectionKey clientKey = player.getChannel().keyFor(selector);
+
         bos.reset();
         kryo.writeObject(out, sp);
         out.flush();
@@ -209,6 +223,7 @@ public class GameServer {
         kd.info = buf;
         
         clientKey.attach(kd);
+        clientKey.interestOps(SelectionKey.OP_WRITE);
     }
 
     private void log(String s) {

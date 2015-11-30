@@ -1,18 +1,27 @@
 package com.tvja.net;
 
 import java.net.InetSocketAddress;
+import java.nio.channels.DatagramChannel;
 
 public class Player {
 	private InetSocketAddress address;
 	private NetworkObject avatar;
 	private Integer id;
+	private DatagramChannel channel;
 	
 	public Player(InetSocketAddress address) {
 		this.address = address;
 		this.id = hashCode();
-
 	}
 	
+	public DatagramChannel getChannel() {
+		return channel;
+	}
+
+	public void setChannel(DatagramChannel channel) {
+		this.channel = channel;
+	}
+
 	public InetSocketAddress getAddress() {
 		return address;
 	}
