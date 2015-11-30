@@ -80,7 +80,7 @@ public class GameServer {
     	channel.register(selector, SelectionKey.OP_READ);
     	
     	while (true) {
-    		selector.select();
+    		selector.select(500);
     		Iterator selectedKeys = selector.selectedKeys().iterator();
     		while (selectedKeys.hasNext()) {
     			SelectionKey key = (SelectionKey) selectedKeys.next();
@@ -155,8 +155,8 @@ public class GameServer {
     private void write(SelectionKey key) throws IOException {
     	DatagramChannel chan = (DatagramChannel) key.channel();
     	KeyData kd = (KeyData) key.attachment();
-    //	System.out.println("write to: " + kd.address.toString());
-    	chan.send(kd.info, kd.address);
+    	int written = chan.send(kd.info, kd.address);
+    	key.cancel();
     }
 
     private void addNewClient(Selector selector, InetSocketAddress ad) throws IOException {
@@ -199,6 +199,8 @@ public class GameServer {
         out.flush();
         byte[] data = bos.toByteArray();
         ByteBuffer buf = ByteBuffer.wrap(data, 0, data.length);
+        buf.position(0);
+        buf.mark();
         
         InetSocketAddress isa = player.getAddress();
         InetSocketAddress isaWithPort = new InetSocketAddress(isa.getHostName(), Protocol.CLIENT_PORT);
