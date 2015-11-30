@@ -71,7 +71,7 @@ public class MultiplayerGame extends TPGameBase {
 		cam = new PerspectiveCamera();
 
         try {
-            socket = new DatagramSocket(new InetSocketAddress(SERVER_ADDRESS, Protocol.CLIENT_PORT));
+            socket = new DatagramSocket(new InetSocketAddress("0.0.0.0", Protocol.CLIENT_PORT));
             socket.setSoTimeout(1);
         } catch (SocketException e) {
             e.printStackTrace();
