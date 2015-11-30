@@ -1,5 +1,7 @@
 package com.tvja.desktop;
 
+import java.io.IOException;
+
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.tvja.net.GameServer;
@@ -14,8 +16,10 @@ public class ServerLauncher {
 		GameServer gs = new GameServer();
 		System.out.println("start server");
 		gs.create();
-		while (true) {
-			gs.update();
+		try {
+			gs.start();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

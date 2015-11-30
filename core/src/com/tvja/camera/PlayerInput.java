@@ -28,6 +28,10 @@ public class PlayerInput {
         deltaX = Gdx.input.getDeltaX();
         deltaY = Gdx.input.getDeltaY();
     }
+    
+    public boolean hasInputs() {
+    	return w || s || a || d || deltaX != 0 || deltaY != 0;
+    }
 
     public boolean isW() {
         return w;

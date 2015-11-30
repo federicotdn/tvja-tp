@@ -1,19 +1,19 @@
 package com.tvja.net;
 
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 public class Player {
-	private InetAddress address;
+	private InetSocketAddress address;
 	private NetworkObject avatar;
 	private Integer id;
-
-	public Player(InetAddress address) {
+	
+	public Player(InetSocketAddress address) {
 		this.address = address;
 		this.id = hashCode();
 
 	}
 	
-	public InetAddress getAddress() {
+	public InetSocketAddress getAddress() {
 		return address;
 	}
 	

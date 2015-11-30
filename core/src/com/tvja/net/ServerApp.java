@@ -169,19 +169,19 @@ public class ServerApp extends ApplicationAdapter {
 
         Player player;
         if (!players.containsKey(ad)) {
-            player = new Player(ad);
-            log("Player added to set.");
-            players.put(player.getAddress(), player);
-            NetworkObject obj = new NetworkObject();
-            obj.genID();
-            player.setAvatar(obj);
-            objects.add(obj);
+//            player = new Player(ad);
+//            log("Player added to set.");
+//            players.put(player.getAddress(), player);
+//            NetworkObject obj = new NetworkObject();
+//            obj.genID();
+//            player.setAvatar(obj);
+//            objects.add(obj);
         } else {
             player = players.get(ad);
         }
 
-        ServerPacket sp = new ServerPacket(Protocol.Code.ACK_CLIENT, player.getId());
-        sendServerPacket(player, sp);
+//        ServerPacket sp = new ServerPacket(Protocol.Code.ACK_CLIENT, player.getId());
+//        sendServerPacket(player, sp);
     }
 
     public void updateClients() {
@@ -194,16 +194,16 @@ public class ServerApp extends ApplicationAdapter {
     }
 
     private void sendServerPacket(Player player, ServerPacket sp) {
-        bos.reset();
-        kryo.writeObject(out, sp);
-        out.flush();
-        byte[] data = bos.toByteArray();
-        DatagramPacket outPacket = new DatagramPacket(data, data.length, player.getAddress(), Protocol.CLIENT_PORT);
-        try {
-            socket.send(outPacket);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        bos.reset();
+//        kryo.writeObject(out, sp);
+//        out.flush();
+//        byte[] data = bos.toByteArray();
+//        DatagramPacket outPacket = new DatagramPacket(data, data.length, player.getAddress(), Protocol.CLIENT_PORT);
+//        try {
+//            socket.send(outPacket);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     @Override

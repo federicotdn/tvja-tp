@@ -72,7 +72,7 @@ public class MultiplayerGame extends TPGameBase {
 
         try {
             socket = new DatagramSocket(new InetSocketAddress(SERVER_ADDRESS, Protocol.CLIENT_PORT));
-            socket.setSoTimeout(16);
+            socket.setSoTimeout(1);
         } catch (SocketException e) {
             e.printStackTrace();
         }
@@ -171,22 +171,23 @@ public class MultiplayerGame extends TPGameBase {
         }
 
         input.grabInputs();
-
-        bos.reset();
-        ClientPacket cp = new ClientPacket(Protocol.Code.INPUT, input);
-        kryo.writeObject(out, cp);
-        out.flush();
-
-        byte[] data = bos.toByteArray();
-
-        DatagramPacket outPakcet = new DatagramPacket(data, data.length,
-                new InetSocketAddress(SERVER_ADDRESS, Protocol.SERVER_PORT));
-        try {
-            socket.send(outPakcet);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (input.hasInputs()) {
+        	bos.reset();
+        	ClientPacket cp = new ClientPacket(Protocol.Code.INPUT, input);
+        	kryo.writeObject(out, cp);
+        	out.flush();
+        	
+        	byte[] data = bos.toByteArray();
+        	
+        	DatagramPacket outPakcet = new DatagramPacket(data, data.length,
+        			new InetSocketAddress(SERVER_ADDRESS, Protocol.SERVER_PORT));
+        	try {
+        		socket.send(outPakcet);
+        	} catch (IOException e) {
+        		e.printStackTrace();
+        	}        	
         }
-
+        
 		Light spot = spotLights.get(0);
 		
 		if (Gdx.input.isKeyPressed(Keys.V)) {
